@@ -18,7 +18,7 @@ struct camera* new_camera(struct v3d _position, struct sph3d _direction, unsigne
     camera_->width = _width;
     camera_->pixel_size = _pixel_size;
     return camera_;
-    //wqrq  
+   
 }
 
 void set_camera_size(struct camera* _camera, unsigned int _new_width, unsigned int _new_height) {
