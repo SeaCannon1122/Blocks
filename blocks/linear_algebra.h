@@ -9,6 +9,12 @@ struct v3d {
 	double z;
 };
 
+struct v3dabs {
+	int x;
+	int y;
+	int z;
+};
+
 struct sph3d {
 	double radius;
 	double theta;

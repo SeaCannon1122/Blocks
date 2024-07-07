@@ -132,6 +132,7 @@
     <ClCompile Include="main.c" />
     <ClCompile Include="utils.c" />
     <ClCompile Include="plattform.c" />
+    <ClCompile Include="world.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h" />
@@ -139,6 +140,7 @@
     <ClInclude Include="linear_algebra.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="plattform.h" />
+    <ClInclude Include="world.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

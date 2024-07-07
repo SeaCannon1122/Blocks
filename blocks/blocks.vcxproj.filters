@@ -33,6 +33,9 @@
     <ClCompile Include="linear_algebra.c">
       <Filter>Source Files\NewFilter1</Filter>
     </ClCompile>
+    <ClCompile Include="world.c">
+      <Filter>Source Files\NewFilter1</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="plattform.h">
@@ -48,6 +51,9 @@
       <Filter>Source Files\NewFilter1</Filter>
     </ClInclude>
     <ClInclude Include="linear_algebra.h">
+      <Filter>Source Files\NewFilter1</Filter>
+    </ClInclude>
+    <ClInclude Include="world.h">
       <Filter>Source Files\NewFilter1</Filter>
     </ClInclude>
   </ItemGroup>

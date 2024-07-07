@@ -10,6 +10,7 @@
 #include "utils.h"
 #include "linear_algebra.h"
 #include "camera.h"
+#include "world.h"
 
 int Entry();
 
