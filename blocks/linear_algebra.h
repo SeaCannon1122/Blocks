@@ -3,6 +3,22 @@
 
 #include "headers.h"
 
+#define magnitude_v3d(_v3d) (sqrt(_v3d.x * _v3d.x + _v3d.y * _v3d.y + _v3d.z * _v3d.z))
+
+#define scale_v3d(_v3d, _scalar) ((struct v3d) {_v3d.x * c, _v3d.y * c, _v3d.z * c,})
+
+#define add_v3d(_a, _b) ((struct v3d) {_a.x + _b.x, _a.y + _b.y, _a.z + _b.z})
+
+#define sub_v3d(_a, _b) ((struct v3d) {_a.x - _b.x, _a.y - _b.y, _a.z - _b.z})
+
+#define unit_v3d(_v3d) (scale_v3d(_v3d, magnitude_v3d(_v3d)))
+
+#define dot_v3d(_a, _b) (_a.x *_b.x + _a.y + _b.y + _a.z * _b.z)
+
+#define cross_v3d(_a, _b) ((struct v3d) {_a.y * _b.z - _a.z *_b.y, _a.z * _b * x - _a.x * _b.z, _a.x * _b.y - _a.y * _b.x})
+
+#define cos_v3d(_a, _b) (dot_v3d(_a, _b)/(magnitude_v3d(_a) * magnitude_v3d(_b)))
+
 struct v3d {
 	double x;
 	double y;
@@ -26,19 +42,14 @@ struct v2d {
 	double y;
 };
 
-struct v3d scale_v3d(struct v3d* _v3d, double _scalar);
+struct v2dabs {
+	int x;
+	int y;
+};
 
-struct v3d add_v3d(struct v3d* _addend1, struct v3d* _addend2);
-
-struct v3d sub_v3d(struct v3d* _minuend, struct v3d* _subtrahend);
-
-double magnitude_v3d(struct v3d* _v3d);
-
-struct v3d unit_v3d(struct v3d* _v3d);
-
-double dot_v3d(struct v3d* _factor1, struct v3d* _factor2);
-
-struct v3d cross_v3d(struct v3d* _factor1, struct v3d* _factor2);
-
+struct triangle {
+	struct v3d p[3];
+	unsigned int color;
+};
 
 #endif // !LINEAR_ALGEBRA_H

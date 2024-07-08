@@ -24,8 +24,32 @@ int Entry() {
     get_block_ptr(_world, &c4)->id = 1;
     get_block_ptr(_world, &c5)->id = 1;
     
-    struct camera* _camera = new_camera((struct v3d) { -0.5, 0, 0 }, (struct sph3d) { 0.07, 0, 0 }, 500, 300, 0.0001, 10);
-        
+    struct camera* _camera = new_camera((struct v3d) { 0, -10.0, 0 }, 500, 300, 0.01, 10);
+    set_camera_direction_sph3d(_camera, (struct sph3d) { 0.07, 0, 00 });
+
+    struct triangle triangles[8] = {0};
+
+    triangles[0].p[0] = (struct v3d){ 0, 0, 0 };
+    triangles[0].p[1] = (struct v3d){ 0, 0, 1 };
+    triangles[0].p[2] = (struct v3d){ 1, 0, 0 };
+    triangles[0].color = 0xff0000;
+
+    triangles[2].p[0] = (struct v3d){ 0, 1, 0 };
+    triangles[2].p[1] = (struct v3d){ 0, 1, 1 };
+    triangles[2].p[2] = (struct v3d){ 1, 1, 0 };
+    triangles[2].color = 0xff0000;
+
+
+    triangles[4].p[0] = (struct v3d){ 0, 0, 0 };
+    triangles[4].p[1] = (struct v3d){ 0, 1, 0 };
+    triangles[4].p[2] = (struct v3d){ 1, 0, 0 };
+    triangles[4].color = 0xff;
+
+
+    triangles[6].p[0] = (struct v3d){ 0, 0, 1 };
+    triangles[6].p[1] = (struct v3d){ 0, 1, 1 };
+    triangles[6].p[2] = (struct v3d){ 1, 0, 1 };
+    triangles[6].color = 0xff;
 
     while (active) {
 
@@ -33,8 +57,11 @@ int Entry() {
 
         set_camera_size(_camera, render_state.buffer_width, render_state.buffer_height);
 
-        
-        render_camera(_camera, _world);
+        flash_camera_screen(_camera);
+
+        for (int i = 0; i < 8; i++) {
+            camera_render_triangle(_camera, &triangles[i]);
+        }
         
 
         if (keystate('C')) active = false;
@@ -42,36 +69,35 @@ int Entry() {
         drawWindow(_camera->pixels, _camera->width, _camera->height);
 
         if (keystate('W')) {
-            _camera->position.x -= 0.1 * sin(_camera->direction.theta);
-            _camera->position.y += 0.1 * cos(_camera->direction.theta);
+            _camera->position.x -= 0.1 * sin(_camera->direction_sph3d.theta);
+            _camera->position.y += 0.1 * cos(_camera->direction_sph3d.theta);
         }
 
         if (keystate('S')) {
-            _camera->position.x += 0.1 * sin(_camera->direction.theta);
-            _camera->position.y -= 0.1 * cos(_camera->direction.theta);
+            _camera->position.x += 0.1 * sin(_camera->direction_sph3d.theta);
+            _camera->position.y -= 0.1 * cos(_camera->direction_sph3d.theta);
         }
 
         if (keystate('D')) {
-            _camera->position.x += 0.1 * cos(_camera->direction.theta);
-            _camera->position.y += 0.1 * sin(_camera->direction.theta);
+            _camera->position.x += 0.1 * cos(_camera->direction_sph3d.theta);
+            _camera->position.y += 0.1 * sin(_camera->direction_sph3d.theta);
         }
 
         if (keystate('A')) {
-            _camera->position.x -= 0.1 * cos(_camera->direction.theta);
-            _camera->position.y -= 0.1 * sin(_camera->direction.theta);
+            _camera->position.x -= 0.1 * cos(_camera->direction_sph3d.theta);
+            _camera->position.y -= 0.1 * sin(_camera->direction_sph3d.theta);
         }
 
         if (keystate(VK_SPACE)) _camera->position.z += 0.1;
         if (keystate(VK_SHIFT)) _camera->position.z -= 0.1;
 
-        if (keystate(VK_UP)) _camera->direction.phi += 0.1;
-        if (keystate(VK_DOWN)) _camera->direction.phi -= 0.1;
-        _camera->direction.phi = clamp(_camera->direction.phi, PI/2, -PI/2);
+        if (keystate(VK_UP)) set_camera_direction_sph3d(_camera, (struct sph3d) {_camera->direction_sph3d.radius, _camera->direction_sph3d.theta, _camera->direction_sph3d.phi + 0.1});
+        if (keystate(VK_DOWN)) set_camera_direction_sph3d(_camera, (struct sph3d) { _camera->direction_sph3d.radius, _camera->direction_sph3d.theta, _camera->direction_sph3d.phi - 0.1 });
 
-        if (keystate(VK_LEFT)) _camera->direction.theta += 0.05;
-        if (keystate(VK_RIGHT)) _camera->direction.theta -= 0.05;
+        if (keystate(VK_LEFT)) set_camera_direction_sph3d(_camera, (struct sph3d) { _camera->direction_sph3d.radius, _camera->direction_sph3d.theta + 0.05, _camera->direction_sph3d.phi });
+        if (keystate(VK_RIGHT)) set_camera_direction_sph3d(_camera, (struct sph3d) { _camera->direction_sph3d.radius, _camera->direction_sph3d.theta - 0.05, _camera->direction_sph3d.phi });
 
-        sleepforms(10);
+        sleepforms(100);
 
     }
     
