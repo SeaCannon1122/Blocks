@@ -36,6 +36,9 @@
     <ClCompile Include="world.c">
       <Filter>Source Files\NewFilter1</Filter>
     </ClCompile>
+    <ClCompile Include="legacy.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="plattform.h">

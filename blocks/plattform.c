@@ -10,12 +10,20 @@ HDC hdc;
 
 struct RENDER_STATE render_state;
 
+LARGE_INTEGER frequency;
+LARGE_INTEGER start_time;
+
 void sleepforms(unsigned int _time_in_milliseconds) {
 	Sleep(_time_in_milliseconds);
 }
 
-void drawWindow(unsigned int* buffer, int width, int height) {
+double get_time() {
+	LARGE_INTEGER current_time;
+	QueryPerformanceCounter(&current_time);
+	return (double)(current_time.QuadPart - start_time.QuadPart) * 1000 / (double) frequency.QuadPart;
+}
 
+void drawWindow(unsigned int* buffer, int width, int height) {
 	SetDIBitsToDevice(hdc, 0, 0, width, height, 0, 0, 0, height, buffer, &bitmap_info, DIB_RGB_COLORS);
 }
 
@@ -113,6 +121,9 @@ int WinMain(
 
 	printf("\n");
 	printf("Windows: starting\n");
+
+	QueryPerformanceFrequency(&frequency);
+	QueryPerformanceCounter(&start_time);
 
 	WNDCLASS window_class = {
 		CS_HREDRAW | CS_VREDRAW,

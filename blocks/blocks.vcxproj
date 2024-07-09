@@ -128,6 +128,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="camera.c" />
+    <ClCompile Include="legacy.c" />
     <ClCompile Include="linear_algebra.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="utils.c" />

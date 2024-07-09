@@ -18,11 +18,14 @@ extern struct RENDER_STATE render_state;
 
 void sleepforms(unsigned int _time_in_milliseconds);
 
+double get_time();
+
 short keystate(int key);
 
 void drawWindow(unsigned int* buffer, int width, int height);
 
 void* create_thread(void* address, void* args, int* mainthreadID);
+
 void join_thread(void* thread_handle);
 
 POINT GetMousePos();
