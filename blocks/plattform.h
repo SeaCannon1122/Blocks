@@ -1,5 +1,5 @@
-#ifndef WIN32_PLATTFORM_H
-#define WIN32_PLATTFORM_H
+#ifndef PLATTFORM_H
+#define PLATTFORM_H
 
 #include <windows.h>
 #include "headers.h"
@@ -30,5 +30,5 @@ void join_thread(void* thread_handle);
 
 POINT GetMousePos();
 
-#endif // !WIN32_PLATTFORM_H
+#endif // !PLATTFORM_H
 

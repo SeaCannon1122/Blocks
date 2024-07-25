@@ -162,7 +162,7 @@ int WinMain(
 	int mainthreadID;
 	//HANDLE mainthread = CreateThread(NULL, 0, Entry, NULL, 0, &mainthreadID);
 
-	void* mainthread = create_thread(Entry, &mainthreadID, NULL);
+	void* mainthread = create_thread(Entry, NULL, &mainthreadID);
 
 	WinControl();
 

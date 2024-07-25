@@ -15,6 +15,8 @@
 
 #define dot_v3d(_a, _b) (_a.x *_b.x + _a.y + _b.y + _a.z * _b.z)
 
+#define dot_v2d(_a, _b) (_a.x *_b.x + _a.y + _b.y)
+
 #define cross_v3d(_a, _b) ((struct v3d) {_a.y * _b.z - _a.z *_b.y, _a.z * _b * x - _a.x * _b.z, _a.x * _b.y - _a.y * _b.x})
 
 #define cos_v3d(_a, _b) (dot_v3d(_a, _b)/(magnitude_v3d(_a) * magnitude_v3d(_b)))
@@ -47,9 +49,6 @@ struct v2dabs {
 	int y;
 };
 
-struct triangle {
-	struct v3d p[3];
-	unsigned int color;
-};
+void draw_line(unsigned int* _buffer, unsigned int _width, unsigned int _height, struct line* _line, unsigned int color);
 
 #endif // !LINEAR_ALGEBRA_H

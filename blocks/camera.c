@@ -62,8 +62,8 @@ void set_camera_size(struct camera* _camera, unsigned int _new_width, unsigned i
 
 
 void flash_camera_screen(struct camera* _camera) {
-    for (int i = 0; i < _camera->width; i++) {
-        for (int j = 0; j < _camera->height; j++) {
+    for (unsigned int i = 0; i < _camera->width; i++) {
+        for (unsigned int j = 0; j < _camera->height; j++) {
             _camera->pixels[i + j * _camera->width] = 0x88b2ff;
         }
     }
@@ -98,8 +98,8 @@ void camera_render_triangle(struct camera* _camera, struct triangle* _tri) {
     }
 
     if (out_cords_length == 0) {
-        struct v2dabs min = { (int)floor(min_3double(cords[0].x, cords[1].x, cords[2].x)), (int)floor(min_3double(cords[0].y, cords[1].y, cords[2].y, 0)) };
-        struct v2dabs max = { (int)floor(max_3double(cords[0].x, cords[1].x, cords[2].x, _camera->width - 1)), (int)floor(max_3double(cords[0].y, cords[1].y, cords[2].y, _camera->height - 1)) };
+        struct v2dabs min = { (int)floor(min_3double(cords[0].x, cords[1].x, cords[2].x)), (int)floor(min_3double(cords[0].y, cords[1].y, cords[2].y)) };
+        struct v2dabs max = { (int)floor(max_3double(cords[0].x, cords[1].x, cords[2].x)), (int)floor(max_3double(cords[0].y, cords[1].y, cords[2].y)) };
 
         min.x = (min.x > (signed int)_camera->width - 1 ? (signed int)_camera->width - 1 : (min.x < 0 ? 0 : min.x));
         min.y = (min.y > (signed int)_camera->height - 1 ? (signed int)_camera->height - 1 : (min.y < 0 ? 0 : min.y));
@@ -147,6 +147,247 @@ void camera_render_triangle(struct camera* _camera, struct triangle* _tri) {
 
     return;
 };
+
+void camera_render_oriented_rect(struct camera* _camera, struct oriented_rect* _o_rect) {
+
+    //struct oriented_rect transformed_rect = {};
+
+    if (_camera->width <= 0 || _camera->height <= 0) return;
+    
+    struct v3d pos = _camera->position;
+    struct v3d dir = _camera->direction_v3d;
+    struct v3d tanx = _camera->xpixelpointer;
+    struct v3d tany = _camera->ypixelpointer;
+
+    struct v3d corners[4] = {
+        {_o_rect->Origin.x + _o_rect->N.x, _o_rect->Origin.y + _o_rect->N.y, _o_rect->Origin.z + _o_rect->N.z},
+        {_o_rect->Origin.x + _o_rect->N.x + _o_rect->B.x, _o_rect->Origin.y + _o_rect->N.y + _o_rect->B.y, _o_rect->Origin.z + _o_rect->N.z + _o_rect->B.z},
+        {_o_rect->Origin.x + _o_rect->B.x, _o_rect->Origin.y + _o_rect->B.y, _o_rect->Origin.z + _o_rect->B.z},
+        _o_rect->Origin,
+        
+    };
+
+    
+
+    struct v3d piercers[4];
+
+    double factors[4];
+
+
+    for (int i = 0; i < 4; i++) {
+        piercers[i] = (struct v3d) {corners[i].x - pos.x, corners[i].y - pos.y, corners[i].z - pos.z};
+        factors[i] = _camera->direction_sph3d.radius * _camera->direction_sph3d.radius / (_camera->direction_v3d.x * piercers[i].x + _camera->direction_v3d.y * piercers[i].y + _camera->direction_v3d.z * piercers[i].z);
+    }
+
+    struct v3d corners_on_screen[5];
+
+    unsigned int corners_on_screen_length = 0;
+    
+    for (int i = 0; i < 4; i++) {
+
+        unsigned int next_i = (i + 1) % 4;
+
+        if (factors[i] <= 1 && factors[i] > 0) {
+            corners_on_screen[corners_on_screen_length] = (struct v3d){ (piercers[i].x * tanx.x + piercers[i].y * tanx.y + piercers[i].z * tanx.z) * factors[i] / _camera->pixel_size + _camera->width / 2,
+                                                                        (piercers[i].x * tany.x + piercers[i].y * tany.y + piercers[i].z * tany.z) * factors[i] / _camera->pixel_size + _camera->height / 2,
+                                                                        0
+            };
+            corners_on_screen_length++;
+
+            if (factors[next_i] > 1 || factors[next_i] < 0) {
+                struct v3d diff = { corners[next_i].x - pos.x, corners[next_i].y - pos.y, corners[next_i].z - pos.z};
+                
+                struct v3d moved_origin = { diff.x * tanx.x + diff.y * tanx.y + diff.z * tanx.z, diff.x * tany.x + diff.y * tany.y + diff.z * tany.z, 0 };
+
+                struct v3d line_piercer = { corners[i].x - corners[next_i].x, corners[i].y - corners[next_i].y, corners[i].z - corners[next_i].z };
+
+                double scalar = 1 - (dir.x * diff.x + dir.y * diff.y + dir.z * diff.z) / (_camera->direction_sph3d.radius * _camera->direction_sph3d.radius);
+
+                struct v3d new_dir = { dir.x * scalar, dir.y * scalar, dir.z * scalar };
+
+                corners_on_screen[corners_on_screen_length] = (struct v3d){ ( ( line_piercer.x * tanx.x + line_piercer.y * tanx.y + line_piercer.z * tanx.z) * (new_dir.x * new_dir.x + new_dir.y * new_dir.y + new_dir.z * new_dir.z) / (new_dir.x * line_piercer.x + new_dir.y * line_piercer.y + new_dir.z * line_piercer.z) + moved_origin.x ) / _camera->pixel_size + _camera->width / 2,
+                                                                            ( ( line_piercer.x * tany.x + line_piercer.y * tany.y + line_piercer.z * tany.z) * (new_dir.x * new_dir.x + new_dir.y * new_dir.y + new_dir.z * new_dir.z) / (new_dir.x * line_piercer.x + new_dir.y * line_piercer.y + new_dir.z * line_piercer.z) + moved_origin.y) / _camera->pixel_size + _camera->height / 2,
+                                                                            0
+                };
+                corners_on_screen_length++;
+            }
+
+        }
+
+        else if (factors[next_i] <= 1 && factors[next_i] > 0) {
+            struct v3d diff = { corners[i].x - pos.x, corners[i].y - pos.y, corners[i].z - pos.z };
+
+            struct v3d moved_origin = { diff.x * tanx.x + diff.y * tanx.y + diff.z * tanx.z, diff.x * tany.x + diff.y * tany.y + diff.z * tany.z, 0 };
+
+            struct v3d line_piercer = { corners[next_i].x - corners[i].x, corners[next_i].y - corners[i].y, corners[next_i].z - corners[i].z };
+
+            double scalar = 1 - (dir.x * diff.x + dir.y * diff.y + dir.z * diff.z) / (_camera->direction_sph3d.radius * _camera->direction_sph3d.radius);
+
+            struct v3d new_dir = { dir.x * scalar, dir.y * scalar, dir.z * scalar };
+
+            corners_on_screen[corners_on_screen_length] = (struct v3d){ ((line_piercer.x * tanx.x + line_piercer.y * tanx.y + line_piercer.z * tanx.z) * (new_dir.x * new_dir.x + new_dir.y * new_dir.y + new_dir.z * new_dir.z) / (new_dir.x * line_piercer.x + new_dir.y * line_piercer.y + new_dir.z * line_piercer.z) + moved_origin.x) / _camera->pixel_size + _camera->width / 2,
+                                                                        ((line_piercer.x * tany.x + line_piercer.y * tany.y + line_piercer.z * tany.z) * (new_dir.x * new_dir.x + new_dir.y * new_dir.y + new_dir.z * new_dir.z) / (new_dir.x * line_piercer.x + new_dir.y * line_piercer.y + new_dir.z * line_piercer.z) + moved_origin.y) / _camera->pixel_size + _camera->height / 2,
+                                                                        0
+            };
+            corners_on_screen_length++;
+        }
+
+        
+    }
+
+    
+    int* frame = (unsigned int*)calloc(_camera->width * _camera->height, sizeof(unsigned int));
+
+    for (int i = 0; i < (int)corners_on_screen_length; i++) {
+        struct line l = { corners_on_screen[i], corners_on_screen[(i + 1) % corners_on_screen_length] };
+
+        double dydx = (l.p[1].y - l.p[0].y) / (l.p[1].x - l.p[0].x);
+
+        if (1 > dydx && -1 < dydx) {
+            struct v3d left;
+            struct v3d right;
+
+            if (l.p[1].x - l.p[0].x > 0) {
+                left = (struct v3d){ floor(l.p[0].x), floor(l.p[0].y), 0 };
+                right = (struct v3d){ l.p[1].x, l.p[1].y, 0 };
+            }
+
+            else {
+                left = (struct v3d){ l.p[1].x, l.p[1].y, 0 };
+                right = (struct v3d){ l.p[0].x, l.p[0].y, 0 };
+            }
+
+            for (double x = floor(left.x + 0.5) + 0.5; x <= right.x; x++) {
+                int next_pixel_index = clamp_int((int)floor(x), _camera->width - 1, 0) + _camera->width * clamp_int((int)(left.y + dydx * (x - left.x)), _camera->height - 1, 0);
+                if (frame[next_pixel_index] != i + 1 && frame[next_pixel_index] != 0) frame[next_pixel_index] = -1;
+                else frame[next_pixel_index] = i + 1;
+            }
+
+        }
+
+        else {
+            struct v3d down;
+            struct v3d up;
+
+            if (l.p[1].y - l.p[0].y > 0) {
+                down = (struct v3d){ l.p[0].x, l.p[0].y, 0 };
+                up = (struct v3d){ l.p[1].x, l.p[1].y, 0 };
+            }
+
+            else {
+                down = (struct v3d){ l.p[1].x, l.p[1].y, 0 };
+                up = (struct v3d){ l.p[0].x, l.p[0].y, 0 };
+            }
+
+            for (double y = floor(down.y + 0.5) + 0.5; y <= up.y; y++) {
+                int next_pixel_index = clamp_int((int)(down.x + 1 / dydx * (y - down.y)), _camera->width - 1, 0) + _camera->width * clamp_int((int)floor(y), _camera->height - 1, 0);
+                if (frame[next_pixel_index] != i + 1 && frame[next_pixel_index] != 0) frame[next_pixel_index] = -1;
+                else frame[next_pixel_index] = i + 1;
+            }
+
+
+        }
+
+        frame[clamp_int((int)floor(l.p[0].x), _camera->width - 1, 0) + _camera->width * clamp_int((int)floor(l.p[0].y), _camera->height - 1, 0)] = i + 1;
+
+    }
+
+    for (int j = 0; j < _camera->height; j++) {
+        bool start = false;
+        bool render = false;
+        bool prev = false;
+        for (int i = 0; i < _camera->width; i++) {
+            
+            if (frame[i + j * _camera->width] > 0) {
+                if (start == false && render == false) start = true;
+                render = true;
+                prev = true;
+            }
+
+            else {
+                if (start == false && render == true && prev == true) render = false;
+                start = false;
+                prev = false;
+            }
+            
+            if(render) {
+                frame[i + j * _camera->width] = 1;
+            
+                struct v3d screen_point = { pos.x + dir.x + (i - (int) _camera->width / 2 + 0.5) * _camera->pixel_size * tanx.x + (j - (int) _camera->height / 2 + 0.5) * _camera->pixel_size * tany.x,
+                                            pos.y + dir.y + (i - (int) _camera->width / 2 + 0.5) * _camera->pixel_size * tanx.y + (j - (int) _camera->height / 2 + 0.5) * _camera->pixel_size * tany.y,
+                                            pos.z + dir.z + (i - (int) _camera->width / 2 + 0.5) * _camera->pixel_size * tanx.z + (j - (int) _camera->height / 2 + 0.5) * _camera->pixel_size * tany.z
+                };
+
+                double scalar = -(_o_rect->T.x * (pos.x - _o_rect->Origin.x) + _o_rect->T.y * (pos.y - _o_rect->Origin.y) + _o_rect->T.z * (pos.z - _o_rect->Origin.z)) /
+                                 (_o_rect->T.x * (screen_point.x - pos.x) + _o_rect->T.y * (screen_point.y - pos.y) + _o_rect->T.z * (screen_point.z - pos.z));
+            
+
+
+                struct v3d int3d = { pos.x + scalar * (screen_point.x - pos.x) - _o_rect->Origin.x, pos.y + scalar * (screen_point.y - pos.y) - _o_rect->Origin.y, pos.z + scalar * (screen_point.z - pos.z) - _o_rect->Origin.z };
+
+                
+
+                struct v3d int2d = { (int3d.x * _o_rect->N.x + int3d.y * _o_rect->N.y + int3d.z * _o_rect->N.z) * 16, (int3d.x * _o_rect->B.x + int3d.y * _o_rect->B.y + int3d.z * _o_rect->B.z) * 16, 0 };
+
+                
+
+                if (int2d.x >= 0 && int2d.x < _o_rect->image->width && int2d.y >= 0 && int2d.y < _o_rect->image->height) { 
+                    _camera->pixels[i + j * _camera->width] = _o_rect->image->data[((int)int2d.x) + _o_rect->image->width * (_o_rect->image->height - (int)int2d.y - 1)].value; 
+                }
+                
+            }
+
+
+        }
+    }
+    
+
+
+    free(frame);
+
+
+    return;
+}
+
+void camera_render_cursor(struct camera* _camera) {
+
+    struct v3d pos = _camera->position;
+    struct v3d dir = _camera->direction_v3d;
+    struct v3d tanx = _camera->xpixelpointer;
+    struct v3d tany = _camera->ypixelpointer;
+
+    struct line lines[3] = {
+                             { (struct v3d) { pos.x + dir.x , pos.y + dir.y , pos.z + dir.z }, (struct v3d) { pos.x + dir.x + _camera->direction_sph3d.radius / 10 , pos.y + dir.y , pos.z + dir.z } },
+                             { (struct v3d) { pos.x + dir.x , pos.y + dir.y , pos.z + dir.z }, (struct v3d) { pos.x + dir.x , pos.y + dir.y + _camera->direction_sph3d.radius / 10 , pos.z + dir.z } },
+                             { (struct v3d) { pos.x + dir.x , pos.y + dir.y , pos.z + dir.z }, (struct v3d) { pos.x + dir.x , pos.y + dir.y , pos.z + dir.z + _camera->direction_sph3d.radius / 10 } }
+    };
+
+    
+
+    for (int c = 0; c < 3; c++) {
+        struct line line_screen;
+        for (int i = 0; i < 2; i++) {
+            struct v3d piercer = { lines[c].p[i].x - pos.x, lines[c].p[i].y - pos.y, lines[c].p[i].z - pos.z};
+            double factor = _camera->direction_sph3d.radius * _camera->direction_sph3d.radius / (_camera->direction_v3d.x * piercer.x + _camera->direction_v3d.y * piercer.y + _camera->direction_v3d.z * piercer.z);
+            line_screen.p[i] = (struct v3d){(piercer.x * tanx.x + piercer.y * tanx.y + piercer.z * tanx.z) * factor / _camera->pixel_size + _camera->width / 2,
+                                                                            (piercer.x * tany.x + piercer.y * tany.y + piercer.z * tany.z) * factor / _camera->pixel_size + _camera->height / 2,
+                                                                            0
+            };
+        }
+    
+        unsigned int color;
+
+        if (c == 0) color = 0xff0000;
+        else if (c == 1) color = 0xff;
+        else color = 0xff00;
+
+        draw_line(_camera->pixels, _camera->width, _camera->height, &line_screen, color);
+
+    }
+
+    return;
+
+}
 
 void delete_camera(struct camera* _camera) {
     free(_camera->pixels);

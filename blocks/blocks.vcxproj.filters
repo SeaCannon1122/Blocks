@@ -16,11 +16,14 @@
     <Filter Include="Source Files\NewFilter1">
       <UniqueIdentifier>{369fb68b-ba85-4305-8020-f0146a14363b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Render">
+      <UniqueIdentifier>{fb1aaca4-34b5-465c-a7be-abc7db5e83d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\plattform">
+      <UniqueIdentifier>{28d1375b-44dc-4f70-b481-2e6d0813234d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="plattform.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="main.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -33,17 +36,14 @@
     <ClCompile Include="linear_algebra.c">
       <Filter>Source Files\NewFilter1</Filter>
     </ClCompile>
-    <ClCompile Include="world.c">
-      <Filter>Source Files\NewFilter1</Filter>
-    </ClCompile>
     <ClCompile Include="legacy.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="plattform.c">
+      <Filter>Source Files\plattform</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="plattform.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="headers.h">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -56,8 +56,11 @@
     <ClInclude Include="linear_algebra.h">
       <Filter>Source Files\NewFilter1</Filter>
     </ClInclude>
-    <ClInclude Include="world.h">
-      <Filter>Source Files\NewFilter1</Filter>
+    <ClInclude Include="plattform.h">
+      <Filter>Source Files\plattform</Filter>
+    </ClInclude>
+    <ClInclude Include="image.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

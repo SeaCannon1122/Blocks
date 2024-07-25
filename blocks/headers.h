@@ -11,6 +11,7 @@
 #include "linear_algebra.h"
 #include "camera.h"
 #include "world.h"
+#include "image.h"
 
 int Entry();
 

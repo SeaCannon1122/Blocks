@@ -1,6 +1,6 @@
 #include "headers.h"
 
-void camera_render_world(struct camera* _camera, struct world* _world) {
+/*void camera_render_world(struct camera* _camera, struct world* _world) {
 
     struct v3dabs cords = { 0, 0, 0 };
 
@@ -22,7 +22,7 @@ void camera_render_world(struct camera* _camera, struct world* _world) {
     for (unsigned int i = 0; i < _camera->height; i++) {
         for (unsigned int j = 0; j < _camera->width; j++) {
 
-            /*
+            
             struct v3d xtangent = { _cos_theta, _sin_theta, 0 };
 
             struct v3d ytangent = { _sin_theta * _sin_phi, -_cos_theta * _sin_phi, _cos_phi };
@@ -35,7 +35,7 @@ void camera_render_world(struct camera* _camera, struct world* _world) {
                 xpixelpointer.y + ypixelpointer.y + direction.y,
                 xpixelpointer.z + ypixelpointer.z + direction.z
             };
-            */
+            
 
             //all in one
 
@@ -139,3 +139,4 @@ void camera_render_world(struct camera* _camera, struct world* _world) {
 
     printf("frame_done ");
 }
+*/
