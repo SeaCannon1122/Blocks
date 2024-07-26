@@ -1,11 +1,4 @@
 #include "headers.h"
-
-struct quadrilateral {
-    struct v2d p0;
-    struct v2d p1;
-    struct v2d p2;
-    struct v2d p3;
-};  
     
 void draw_quadrilateral(struct quadrilateral* _quadrilateral, struct camera* _camera) {
 }
@@ -22,13 +15,13 @@ void controling(struct camera* _camera) {
     while (active) {
 
         if (keystate('W')) {
-            _camera->position.x -= 0.05 * sin(_camera->direction_sph3d.theta);
-            _camera->position.y += 0.05 * cos(_camera->direction_sph3d.theta);
+            _camera->position.x -= 0.02 * sin(_camera->direction_sph3d.theta);
+            _camera->position.y += 0.02 * cos(_camera->direction_sph3d.theta);
         }
 
         if (keystate('S')) {
-            _camera->position.x += 0.05 * sin(_camera->direction_sph3d.theta);
-            _camera->position.y -= 0.05 * cos(_camera->direction_sph3d.theta);
+            _camera->position.x += 0.02 * sin(_camera->direction_sph3d.theta);
+            _camera->position.y -= 0.02 * cos(_camera->direction_sph3d.theta);
         }
 
         if (keystate('D')) {
@@ -62,21 +55,6 @@ int Entry() {
 
     set_camera_direction_sph3d(_camera, (struct sph3d) { 0.07, 0, 0 });
 
-    struct triangle triangles[8] = {
-        { (struct v3d) { 0, 0, 0 }, (struct v3d) { 1, 0, 0 }, (struct v3d) { 0, 1, 0 }, 0xff0000 },
-        { (struct v3d) { 1, 1, 0 }, (struct v3d) { 1, 0, 0 }, (struct v3d) { 0, 1, 0 }, 0xff00 },
-        { (struct v3d) { 1, 0, 0 }, (struct v3d) { 2, 0, 0 }, (struct v3d) { 1, 1, 0 }, 0xff0000 },
-        { (struct v3d) { 2, 1, 0 }, (struct v3d) { 2, 0, 0 }, (struct v3d) { 1, 1, 0 }, 0xff00 },
-        { (struct v3d) { 0, 1, 0 }, (struct v3d) { 1, 1, 0 }, (struct v3d) { 0, 2, 0 }, 0xff0000 },
-        { (struct v3d) { 1, 2, 0 }, (struct v3d) { 1, 1, 0 }, (struct v3d) { 0, 2, 0 }, 0xff00 },
-        { (struct v3d) { 1, 1, 0 }, (struct v3d) { 2, 1, 0 }, (struct v3d) { 1, 2, 0 }, 0xff0000 },
-        { (struct v3d) { 2, 2, 0 }, (struct v3d) { 2, 1, 0 }, (struct v3d) { 1, 2, 0 }, 0xff00 },
-        
-
-    };
-
-    struct triangle t = { (struct v3d) { 0, 0, 0 }, (struct v3d) { 1, 0, 0 }, (struct v3d) { 0, 0, 1 }, 0xff0000 };
-
     unsigned int diamond_ore_pixels[256] = { 0xff8f8f8f, 0xff7f7f7f, 0xff7f7f7f, 0xff8f8f8f, 0xff7f7f7f, 0xff747474, 0xff747474, 0xff7f7f7f, 0xff747474, 0xff676767, 0xff747474, 0xff747474, 0xff7f7f7f, 0xff8f8f8f, 0xff8f8f8f, 0xff8f8f8f,
 0xff7f7f7f, 0xff7f7f7f, 0xff747474, 0xff7f7f7f, 0xff676767, 0xff8f8f8f, 0xff8f8f8f, 0xff8f8f8f, 0xff8f8f8f, 0xff7f7f7f, 0xff7f7f7f, 0xff747474, 0xff676767, 0xff676767, 0xff747474, 0xff7f7f7f,
 0xff7f7f7f, 0xff747474, 0xff676767, 0xff676767, 0xff1ed0d6, 0xff8f8f8f, 0xff7f7f7f, 0xff676767, 0xff676767, 0xff747474, 0xff747474, 0xff676767, 0xff77e7d1, 0xff239698, 0xff7f7f7f, 0xff7f7f7f,
@@ -104,9 +82,10 @@ int Entry() {
         { (struct v3d) { 1, 1, 0 }, (struct v3d) { 0, 1, 0 }, (struct v3d) { -1, 0, 0 }, (struct v3d) { 0, 0, 1 }, &diamond_ore },
         { (struct v3d) { 1, 0, 0 }, (struct v3d) { 1, 0, 0 }, (struct v3d) { 0, 1, 0 }, (struct v3d) { 0, 0, 1 }, &diamond_ore },
         { (struct v3d) { 0, 0, 1 }, (struct v3d) { 0, 0, 1 }, (struct v3d) { 1, 0, 0 }, (struct v3d) { 0, 1, 0 }, &diamond_ore },
-        { (struct v3d) { 1, 1, 0 }, (struct v3d) { 0, 0, -1 }, (struct v3d) { -1, 0, 0 }, (struct v3d) { 0, -1, 0 }, &diamond_ore },
+        { (struct v3d) { 0, 1, 0 }, (struct v3d) { 0, 0, -1 }, (struct v3d) { 1, 0, 0 }, (struct v3d) { 0, -1, 0 }, &diamond_ore },
     };
 
+    struct oriented_rect testrect = { (struct v3d) { 0, 0, 0 }, (struct v3d) { 0, -1, 0 }, (struct v3d) { 1, 0, 0 }, (struct v3d) { 0, 0, 1 }, & diamond_ore };
     
     int fps_counter = 0;
     int* fps_counter_address = &fps_counter;
@@ -125,18 +104,16 @@ int Entry() {
         set_camera_size(_camera, render_state.buffer_width, render_state.buffer_height);
 
         flash_camera_screen(_camera);
-
-        //for (int i = 0; i < 8; i++) camera_render_triangle(_camera, &triangles[i]);
         
         *_camera_copy = *_camera;
 
         for (int i = 0; i < 6; i++) {
-            if ((sides[i].Origin.x - _camera_copy->position.x) * sides[i].T.x + (sides[i].Origin.y - _camera_copy->position.y) * sides[i].T.y + (sides[i].Origin.z - _camera_copy->position.z) * sides[i].T.z < 0) camera_render_oriented_rect(_camera_copy, &sides[i]);
+            //if ((sides[i].Origin.x - _camera_copy->position.x) * sides[i].T.x + (sides[i].Origin.y - _camera_copy->position.y) * sides[i].T.y + (sides[i].Origin.z - _camera_copy->position.z) * sides[i].T.z < 0) camera_render_oriented_rect(_camera_copy, &sides[i]);
         }
 
-        camera_render_cursor(_camera);
+        camera_render_oriented_rect(_camera_copy, &testrect);
 
-        //camera_render_triangle(_camera, &t);
+        camera_render_cursor(_camera);
 
         if (keystate('C')) active = false;
 

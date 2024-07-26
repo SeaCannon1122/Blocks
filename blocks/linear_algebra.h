@@ -39,10 +39,7 @@ struct sph3d {
 	double phi;
 };
 
-struct v2d {
-	double x;
-	double y;
-};
+
 
 struct v2dabs {
 	int x;
