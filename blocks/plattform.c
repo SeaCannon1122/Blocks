@@ -17,6 +17,12 @@ void sleepforms(unsigned int _time_in_milliseconds) {
 	Sleep(_time_in_milliseconds);
 }
 
+void console_top() {
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	COORD topLeft = { 0, 0 };
+	SetConsoleCursorPosition(hConsole, topLeft);
+}
+
 double get_time() {
 	LARGE_INTEGER current_time;
 	QueryPerformanceCounter(&current_time);
@@ -158,6 +164,27 @@ int WinMain(
 	hdc = GetDC(window);
 
 	printf("Windows: entering main method\n");
+
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+	DWORD count;
+	DWORD cellCount;
+	COORD homeCoords = { 0, 0 };
+
+	if (hConsole == INVALID_HANDLE_VALUE) return;
+
+	// Get the number of cells in the current buffer
+	if (!GetConsoleScreenBufferInfo(hConsole, &csbi)) return;
+	cellCount = csbi.dwSize.X * csbi.dwSize.Y;
+
+	// Fill the entire buffer with spaces
+	if (!FillConsoleOutputCharacter(hConsole, (TCHAR)' ', cellCount, homeCoords, &count)) return;
+
+	// Fill the entire buffer with the current colors and attributes
+	if (!FillConsoleOutputAttribute(hConsole, csbi.wAttributes, cellCount, homeCoords, &count)) return;
+
+	// Move the cursor to the home coordinates
+	SetConsoleCursorPosition(hConsole, homeCoords);
 
 	int mainthreadID;
 	//HANDLE mainthread = CreateThread(NULL, 0, Entry, NULL, 0, &mainthreadID);

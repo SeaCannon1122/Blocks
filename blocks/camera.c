@@ -169,43 +169,42 @@ void camera_render_oriented_rect(struct camera* _camera, struct oriented_rect* _
         
     }
 
+    if (corners_on_screen_length == 0) return;
     
     
     char* frame = (char*)calloc(width * height, sizeof(char));
 
     struct v3d normals[5];
-    double sumx = 0;
-    double sumy = 0;
+
 
     for (int i = 0; i < corners_on_screen_length; i++) {
         normals[i] = (struct v3d){ corners_on_screen[i].y - corners_on_screen[(i + 1) % corners_on_screen_length].y, corners_on_screen[(i + 1) % corners_on_screen_length].x - corners_on_screen[i].x, 0 };
-        sumx += corners_on_screen[i].x;
-        sumy += corners_on_screen[i].y;
     }
 
-    struct v3d current = {floor(clamp(sumx / corners_on_screen_length, width - 1, 0)) + 0.5, floor(clamp(sumy / corners_on_screen_length, height - 1, 0)) + 0.5};
 
-    struct v3d rel = { current.x - corners_on_screen[0].x, current.y - corners_on_screen[0].y, 0 };
 
-    while (rel.x * normals[0].x + rel.y * normals[0].y >= 0) {
-        current = (struct v3d) { current.x + 1, current.y, 0};
-        rel = (struct v3d) { current.x - corners_on_screen[0].x, current.y - corners_on_screen[0].y, 0 };
-        if (current.x > width) break;
-        _camera->pixels[((int)current.x) + (int)current.y * width] = 0xff0000;
+    for (int i = 0; i < corners_on_screen_length; i++) {
+
     }
 
-    current = (struct v3d){ current.x - 1, current.y, 0 };
+    struct v3d start = { clamp(floor(corners_on_screen[0].x - 0.5) + 0.5, width - 0.5, 0.5), clamp(floor(corners_on_screen[0].y + 0.5) + 0.5, height - 0.5, 0.5), 0 };
 
-    struct v3d mov_dir = { 1, 0, 0 };
+    struct v3d current = start;
+
+    struct v3d mov_dir = { 1, -1, 0 };
 
     struct v3d check = { current.x + mov_dir.x, current.y + mov_dir.y, 0};
     
     struct v3d diff;
 
+    int counter = 0;
+
     for (int l = 0; l < 10000; l++) {
+        if (counter > 8) {  break; }
+
         if ((int)check.x >= 0 && (int)check.x < width && (int)check.y >= 0 && (int)check.y < height) {
             
-            if (frame[((int)check.x) + (int)check.y * width] == 1) break;
+            if (current.x == start.x && current.y == start.y && frame[((int)check.x) + (int)check.y * width] == 1) break;
             bool inside = true;
 
             for (int i = 0; i < corners_on_screen_length; i++) {
@@ -218,15 +217,17 @@ void camera_render_oriented_rect(struct camera* _camera, struct oriented_rect* _
 
             if (inside) {
                 frame[((int)check.x) + (int)check.y * width] = 1;
-                _camera->pixels[((int)check.x) + (int)check.y * width] = 1;
+                _camera->pixels[((int)check.x) + (int)check.y * width] = 0xff0000;
                 current = check;
                 decv(&mov_dir);
                 check = (struct v3d){ current.x + mov_dir.x, current.y + mov_dir.y, 0 };
+                counter = 0;
             }
 
             else {
                 incv(&mov_dir);
                 check = (struct v3d){ current.x + mov_dir.x, current.y + mov_dir.y, 0 };
+                counter++;
             }
 
         }
@@ -234,8 +235,11 @@ void camera_render_oriented_rect(struct camera* _camera, struct oriented_rect* _
         else {
             incv(&mov_dir);
             check = (struct v3d){ current.x + mov_dir.x, current.y + mov_dir.y, 0 };
+            counter++;
         }
     }
+
+    _camera->pixels[((int)start.x) + (int)start.y * width] = 0x0;
 
     for (int j = 0; j < height; j++) {
         bool start = false;
@@ -257,7 +261,6 @@ void camera_render_oriented_rect(struct camera* _camera, struct oriented_rect* _
             
             if(render) {
                 frame[i + j * width] = 1;
-                if(_camera->pixels[i + j * width] != 0xff0000) _camera->pixels[i + j * width] = 0;
 
                 struct v3d screen_point = {pos.x + dir.x + (i - width / 2 + 0.5) * _camera->pixel_size * tanx.x + (j - height / 2 + 0.5) * _camera->pixel_size * tany.x,
                                             pos.y + dir.y + (i - width / 2 + 0.5) * _camera->pixel_size * tanx.y + (j - height / 2 + 0.5) * _camera->pixel_size * tany.y,

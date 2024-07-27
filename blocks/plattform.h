@@ -18,6 +18,8 @@ extern struct RENDER_STATE render_state;
 
 void sleepforms(unsigned int _time_in_milliseconds);
 
+void clear_console();
+
 double get_time();
 
 short keystate(int key);

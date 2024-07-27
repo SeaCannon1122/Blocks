@@ -1,27 +1,16 @@
 #include "headers.h"
-    
-void draw_quadrilateral(struct quadrilateral* _quadrilateral, struct camera* _camera) {
-}
-
-void fps_counting(void* args) {
-    while (active) {
-        printf("fps: %d\n", **(int**)args);
-        **(int**)args = 0;
-        sleepforms(1000);
-    }
-}
 
 void controling(struct camera* _camera) {
     while (active) {
 
         if (keystate('W')) {
-            _camera->position.x -= 0.02 * sin(_camera->direction_sph3d.theta);
-            _camera->position.y += 0.02 * cos(_camera->direction_sph3d.theta);
+            _camera->position.x -= 0.05 * sin(_camera->direction_sph3d.theta);
+            _camera->position.y += 0.05 * cos(_camera->direction_sph3d.theta);
         }
 
         if (keystate('S')) {
-            _camera->position.x += 0.02 * sin(_camera->direction_sph3d.theta);
-            _camera->position.y -= 0.02 * cos(_camera->direction_sph3d.theta);
+            _camera->position.x += 0.05 * sin(_camera->direction_sph3d.theta);
+            _camera->position.y -= 0.05 * cos(_camera->direction_sph3d.theta);
         }
 
         if (keystate('D')) {
@@ -49,6 +38,8 @@ void controling(struct camera* _camera) {
 }
 
 int Entry() {
+
+    double last_frame_time;
 
     struct camera* _camera = new_camera((struct v3d) { 0, -2.0, -0.05 }, 500, 300, 0.0002, 10);
     struct camera* _camera_copy = new_camera((struct v3d) { 0, -2.0, 0 }, 500, 300, 0.0002, 10);
@@ -87,17 +78,15 @@ int Entry() {
 
     struct oriented_rect testrect = { (struct v3d) { 0, 0, 0 }, (struct v3d) { 0, -1, 0 }, (struct v3d) { 1, 0, 0 }, (struct v3d) { 0, 0, 1 }, & diamond_ore };
     
-    int fps_counter = 0;
-    int* fps_counter_address = &fps_counter;
+    struct oriented_rect floors[400];
 
-
-    int fps_counter_threadID;
-
-    void* fps_counter_thread = create_thread(fps_counting, &fps_counter_address, &fps_counter_threadID);
+    for (int i = 0; i < 400; i++) floors[i] = (struct oriented_rect){ (struct v3d) { i % 20, (int)(i / 20), 0 }, (struct v3d) { 0, 0, 1 }, (struct v3d) { 1, 0, 0 }, (struct v3d) { 0, 1, 0 }, &diamond_ore};
 
     int control_threadID;
 
     void* control_thread = create_thread(controling, _camera, &control_threadID);
+
+    last_frame_time = get_time();
 
     while (active) {
 
@@ -111,18 +100,31 @@ int Entry() {
             //if ((sides[i].Origin.x - _camera_copy->position.x) * sides[i].T.x + (sides[i].Origin.y - _camera_copy->position.y) * sides[i].T.y + (sides[i].Origin.z - _camera_copy->position.z) * sides[i].T.z < 0) camera_render_oriented_rect(_camera_copy, &sides[i]);
         }
 
-        camera_render_oriented_rect(_camera_copy, &testrect);
-
+        if ((testrect.Origin.x - _camera_copy->position.x) * testrect.T.x + (testrect.Origin.y - _camera_copy->position.y) * testrect.T.y + (testrect.Origin.z - _camera_copy->position.z) * testrect.T.z < 0) camera_render_oriented_rect(_camera_copy, &testrect);
+        
+        for (int i = 0; i < 400; i++) {
+            //if ((floors[i].Origin.x - _camera_copy->position.x) * floors[i].T.x + (floors[i].Origin.y - _camera_copy->position.y) * floors[i].T.y + (floors[i].Origin.z - _camera_copy->position.z) * floors[i].T.z < 0) camera_render_oriented_rect(_camera_copy, &floors[i]);
+        }
+        
         camera_render_cursor(_camera);
 
         if (keystate('C')) active = false;
 
         drawWindow(_camera->pixels, _camera->width, _camera->height);
 
-        fps_counter++;
+        console_top();
+        printf("                                            \n");
+        printf("                                            \n");
+        printf("                                            \n");
+
+        console_top();
+        printf("time taken: %llfms\n", get_time() - last_frame_time);
+        printf("position: %llf %llf %llf\n", _camera->position.x, _camera->position.y, _camera->position.z);
+        printf("heading: %llf %llf\n", _camera->direction_sph3d.theta, _camera->direction_sph3d.phi);
+        last_frame_time = get_time();
+        
     }
     
-    join_thread(fps_counter_thread);
     join_thread(control_thread);
 
 
