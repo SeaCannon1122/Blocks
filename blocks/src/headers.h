@@ -6,12 +6,12 @@
 #include <math.h>
 #include <stdbool.h>
 
-#include "plattform.h"
+#include "platform/platform.h"
 #include "utils.h"
 #include "linear_algebra.h"
 #include "camera.h"
-#include "world.h"
-#include "image.h"
+#include "argb_image.h"
+#include "stb_image.h"
 
 int Entry();
 

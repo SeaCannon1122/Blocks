@@ -1,41 +1,57 @@
 #include "headers.h"
 
+enum ConsoleMode
+{
+    DEBUG = 1,
+    GAMEINFO = 0,
+};
+
+
+int consolemode = GAMEINFO;
+
 void controling(struct camera* _camera) {
     while (active) {
 
         if (keystate('W')) {
-            _camera->position.x -= 0.05 * sin(_camera->direction_sph3d.theta);
-            _camera->position.y += 0.05 * cos(_camera->direction_sph3d.theta);
+            _camera->position.x -= 0.5 * sin(_camera->direction_sph3d.theta);
+            _camera->position.y += 0.5 * cos(_camera->direction_sph3d.theta);
         }
 
         if (keystate('S')) {
-            _camera->position.x += 0.05 * sin(_camera->direction_sph3d.theta);
-            _camera->position.y -= 0.05 * cos(_camera->direction_sph3d.theta);
+            _camera->position.x += 0.5 * sin(_camera->direction_sph3d.theta);
+            _camera->position.y -= 0.5 * cos(_camera->direction_sph3d.theta);
         }
 
         if (keystate('D')) {
-            _camera->position.x += 0.05 * cos(_camera->direction_sph3d.theta);
-            _camera->position.y += 0.05 * sin(_camera->direction_sph3d.theta);
+            _camera->position.x += 0.5 * cos(_camera->direction_sph3d.theta);
+            _camera->position.y += 0.5 * sin(_camera->direction_sph3d.theta);
         }
 
         if (keystate('A')) {
-            _camera->position.x -= 0.05 * cos(_camera->direction_sph3d.theta);
-            _camera->position.y -= 0.05 * sin(_camera->direction_sph3d.theta);
+            _camera->position.x -= 0.5 * cos(_camera->direction_sph3d.theta);
+            _camera->position.y -= 0.5 * sin(_camera->direction_sph3d.theta);
         }
 
-        if (keystate(VK_SPACE)) _camera->position.z += 0.05;
-        if (keystate(VK_SHIFT)) _camera->position.z -= 0.05;
+        if (keystate(VK_SPACE)) _camera->position.z += 0.5;
+        if (keystate(VK_SHIFT)) _camera->position.z -= 0.5;
 
-        if (keystate(VK_UP)) set_camera_direction_sph3d(_camera, (struct sph3d) { _camera->direction_sph3d.radius, _camera->direction_sph3d.theta, _camera->direction_sph3d.phi + 0.04 });
-        if (keystate(VK_DOWN)) set_camera_direction_sph3d(_camera, (struct sph3d) { _camera->direction_sph3d.radius, _camera->direction_sph3d.theta, _camera->direction_sph3d.phi - 0.04 });
+        if (keystate(VK_UP)) set_camera_direction_sph3d(_camera, (struct sph3d) { _camera->direction_sph3d.radius, _camera->direction_sph3d.theta, _camera->direction_sph3d.phi + 0.1 });
+        if (keystate(VK_DOWN)) set_camera_direction_sph3d(_camera, (struct sph3d) { _camera->direction_sph3d.radius, _camera->direction_sph3d.theta, _camera->direction_sph3d.phi - 0.1 });
 
-        if (keystate(VK_LEFT)) set_camera_direction_sph3d(_camera, (struct sph3d) { _camera->direction_sph3d.radius, _camera->direction_sph3d.theta + 0.025, _camera->direction_sph3d.phi });
-        if (keystate(VK_RIGHT)) set_camera_direction_sph3d(_camera, (struct sph3d) { _camera->direction_sph3d.radius, _camera->direction_sph3d.theta - 0.025, _camera->direction_sph3d.phi });
+        if (keystate(VK_LEFT)) set_camera_direction_sph3d(_camera, (struct sph3d) { _camera->direction_sph3d.radius, _camera->direction_sph3d.theta + 0.1, _camera->direction_sph3d.phi });
+        if (keystate(VK_RIGHT)) set_camera_direction_sph3d(_camera, (struct sph3d) { _camera->direction_sph3d.radius, _camera->direction_sph3d.theta - 0.1, _camera->direction_sph3d.phi });
 
+        if (keystate('C')) active = false;
+
+        if (keystate('P')) {
+            if (consolemode == GAMEINFO) consolemode = DEBUG;
+            else consolemode = GAMEINFO;
+        }
 
         sleepforms(20);
     }
 }
+
 
 int Entry() {
 
@@ -78,9 +94,11 @@ int Entry() {
 
     struct oriented_rect testrect = { (struct v3d) { 0, 0, 0 }, (struct v3d) { 0, -1, 0 }, (struct v3d) { 1, 0, 0 }, (struct v3d) { 0, 0, 1 }, & diamond_ore };
     
-    struct oriented_rect floors[400];
 
-    for (int i = 0; i < 400; i++) floors[i] = (struct oriented_rect){ (struct v3d) { i % 20, (int)(i / 20), 0 }, (struct v3d) { 0, 0, 1 }, (struct v3d) { 1, 0, 0 }, (struct v3d) { 0, 1, 0 }, &diamond_ore};
+
+    struct oriented_rect* floors = (struct oriented_rect*) malloc(160000 * sizeof(struct oriented_rect));
+
+    for (int i = 0; i < 160000; i++) floors[i] = (struct oriented_rect){ (struct v3d) { i % 400, (int)(i / 400), 0 }, (struct v3d) { 0, 0, 1 }, (struct v3d) { 1, 0, 0 }, (struct v3d) { 0, 1, 0 }, &diamond_ore};
 
     int control_threadID;
 
@@ -100,28 +118,31 @@ int Entry() {
             //if ((sides[i].Origin.x - _camera_copy->position.x) * sides[i].T.x + (sides[i].Origin.y - _camera_copy->position.y) * sides[i].T.y + (sides[i].Origin.z - _camera_copy->position.z) * sides[i].T.z < 0) camera_render_oriented_rect(_camera_copy, &sides[i]);
         }
 
-        if ((testrect.Origin.x - _camera_copy->position.x) * testrect.T.x + (testrect.Origin.y - _camera_copy->position.y) * testrect.T.y + (testrect.Origin.z - _camera_copy->position.z) * testrect.T.z < 0) camera_render_oriented_rect(_camera_copy, &testrect);
+        //if ((testrect.Origin.x - _camera_copy->position.x) * testrect.T.x + (testrect.Origin.y - _camera_copy->position.y) * testrect.T.y + (testrect.Origin.z - _camera_copy->position.z) * testrect.T.z < 0) camera_render_oriented_rect(_camera_copy, &testrect);
         
-        for (int i = 0; i < 400; i++) {
-            //if ((floors[i].Origin.x - _camera_copy->position.x) * floors[i].T.x + (floors[i].Origin.y - _camera_copy->position.y) * floors[i].T.y + (floors[i].Origin.z - _camera_copy->position.z) * floors[i].T.z < 0) camera_render_oriented_rect(_camera_copy, &floors[i]);
+        for (int i = 0; i < 160000; i++) {
+            if ((floors[i].Origin.x - _camera_copy->position.x) * floors[i].T.x + (floors[i].Origin.y - _camera_copy->position.y) * floors[i].T.y + (floors[i].Origin.z - _camera_copy->position.z) * floors[i].T.z < 0) camera_render_oriented_rect(_camera_copy, &floors[i]);
         }
         
         camera_render_cursor(_camera);
 
-        if (keystate('C')) active = false;
-
         drawWindow(_camera->pixels, _camera->width, _camera->height);
 
-        console_top();
-        printf("                                            \n");
-        printf("                                            \n");
-        printf("                                            \n");
+        if (consolemode == GAMEINFO) {
+            console_top();
+            printf("                                            \n");
+            printf("                                            \n");
+            printf("                                            \n");
 
-        console_top();
-        printf("time taken: %llfms\n", get_time() - last_frame_time);
-        printf("position: %llf %llf %llf\n", _camera->position.x, _camera->position.y, _camera->position.z);
-        printf("heading: %llf %llf\n", _camera->direction_sph3d.theta, _camera->direction_sph3d.phi);
+            console_top();
+            printf("time taken: %llfms\n", get_time() - last_frame_time);
+            printf("position: %llf %llf %llf\n", _camera->position.x, _camera->position.y, _camera->position.z);
+            printf("heading: %llf %llf\n", _camera->direction_sph3d.theta, _camera->direction_sph3d.phi);
+            
+        }
+
         last_frame_time = get_time();
+        
         
     }
     

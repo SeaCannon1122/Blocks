@@ -1,6 +1,5 @@
-#include <windows.h>
-#include <stdbool.h>
-#include "plattform.h"
+#include "headers.h"
+
 bool active = true;
 bool msgcheck = false;
 

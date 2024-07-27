@@ -1,5 +1,5 @@
-#ifndef IMAGE_H
-#define IMAGE_H
+#ifndef ARGB_IMAGE_H
+#define ARGB_IMAGE_H
 
 struct color {
 	char b;

@@ -1,5 +1,5 @@
-#ifndef PLATTFORM_H
-#define PLATTFORM_H
+#ifndef PLATFORM_WIN32_H
+#define PLATTFORM_WIN32H
 
 #include <windows.h>
 #include "headers.h"
@@ -18,7 +18,7 @@ extern struct RENDER_STATE render_state;
 
 void sleepforms(unsigned int _time_in_milliseconds);
 
-void clear_console();
+void console_top();
 
 double get_time();
 

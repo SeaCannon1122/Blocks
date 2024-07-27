@@ -69,20 +69,7 @@ void flash_camera_screen(struct camera* _camera) {
     }
 }
 
-void incv(struct v3d* v) {
-    struct v3d _v = *v;
-    v->x = (_v.x - _v.y) / (_v.x + _v.y == 0 ? 2 : 1);
-    v->y = (_v.x + _v.y) / (_v.x - _v.y == 0 ? 2 : 1);
-}
-
-void decv(struct v3d* v) {
-    struct v3d _v = *v;
-    v->x = (_v.y + _v.x) / (_v.x - _v.y == 0 ? 2 : 1);
-    v->y = (_v.y - _v.x) / (_v.x + _v.y == 0 ? 2 : 1);
-}
 void camera_render_oriented_rect(struct camera* _camera, struct oriented_rect* _o_rect) {
-
-    //struct oriented_rect transformed_rect = {};
 
     if (_camera->width <= 0 || _camera->height <= 0) return;
     
@@ -100,8 +87,6 @@ void camera_render_oriented_rect(struct camera* _camera, struct oriented_rect* _
         _o_rect->Origin,
         
     };
-
-    
 
     struct v3d piercers[4];
 
@@ -170,130 +155,43 @@ void camera_render_oriented_rect(struct camera* _camera, struct oriented_rect* _
     }
 
     if (corners_on_screen_length == 0) return;
-    
-    
-    char* frame = (char*)calloc(width * height, sizeof(char));
+
+    struct v3dabs screen_bound_min = { width, height, 0 };
+    struct v3dabs screen_bound_max = {-1, -1, 0};
 
     struct v3d normals[5];
 
-
     for (int i = 0; i < corners_on_screen_length; i++) {
         normals[i] = (struct v3d){ corners_on_screen[i].y - corners_on_screen[(i + 1) % corners_on_screen_length].y, corners_on_screen[(i + 1) % corners_on_screen_length].x - corners_on_screen[i].x, 0 };
+        struct v3dabs abs = { clamp_int(corners_on_screen[i].x, width - 1, 0), clamp_int(corners_on_screen[i].y, height - 1, 0), 0 };
+        if (abs.x > screen_bound_max.x) screen_bound_max.x = abs.x;
+        if (abs.x < screen_bound_min.x) screen_bound_min.x = abs.x;
+        if (abs.y > screen_bound_max.y) screen_bound_max.y = abs.y;
+        if (abs.y < screen_bound_min.y) screen_bound_min.y = abs.y;
     }
-
-
-
-    for (int i = 0; i < corners_on_screen_length; i++) {
-
-    }
-
-    struct v3d start = { clamp(floor(corners_on_screen[0].x - 0.5) + 0.5, width - 0.5, 0.5), clamp(floor(corners_on_screen[0].y + 0.5) + 0.5, height - 0.5, 0.5), 0 };
-
-    struct v3d current = start;
-
-    struct v3d mov_dir = { 1, -1, 0 };
-
-    struct v3d check = { current.x + mov_dir.x, current.y + mov_dir.y, 0};
     
-    struct v3d diff;
+    for (int j = screen_bound_min.y; j <= screen_bound_max.y; j++) {
 
-    int counter = 0;
+        for (int i = screen_bound_min.x; i <= screen_bound_max.x; i++) { 
 
-    for (int l = 0; l < 10000; l++) {
-        if (counter > 8) {  break; }
-
-        if ((int)check.x >= 0 && (int)check.x < width && (int)check.y >= 0 && (int)check.y < height) {
-            
-            if (current.x == start.x && current.y == start.y && frame[((int)check.x) + (int)check.y * width] == 1) break;
-            bool inside = true;
-
-            for (int i = 0; i < corners_on_screen_length; i++) {
-                diff = (struct v3d){ check.x - corners_on_screen[i].x, check.y - corners_on_screen[i].y, 0 };
-                if (normals[i].x * diff.x + normals[i].y * diff.y < 0) {
-                    inside = false;
-                    break;
-                }
-            }
-
-            if (inside) {
-                frame[((int)check.x) + (int)check.y * width] = 1;
-                _camera->pixels[((int)check.x) + (int)check.y * width] = 0xff0000;
-                current = check;
-                decv(&mov_dir);
-                check = (struct v3d){ current.x + mov_dir.x, current.y + mov_dir.y, 0 };
-                counter = 0;
-            }
-
-            else {
-                incv(&mov_dir);
-                check = (struct v3d){ current.x + mov_dir.x, current.y + mov_dir.y, 0 };
-                counter++;
-            }
-
-        }
-
-        else {
-            incv(&mov_dir);
-            check = (struct v3d){ current.x + mov_dir.x, current.y + mov_dir.y, 0 };
-            counter++;
-        }
-    }
-
-    _camera->pixels[((int)start.x) + (int)start.y * width] = 0x0;
-
-    for (int j = 0; j < height; j++) {
-        bool start = false;
-        bool render = false;
-        bool prev = false;
-        for (int i = 0; i < width; i++) {
-            
-            if (frame[i + j * width] > 0) {
-                if (start == false && render == false) start = true;
-                render = true;
-                prev = true;
-            }
-
-            else {
-                if (start == false && render == true && prev == true) render = false;
-                start = false;
-                prev = false;
-            }
-            
-            if(render) {
-                frame[i + j * width] = 1;
-
-                struct v3d screen_point = {pos.x + dir.x + (i - width / 2 + 0.5) * _camera->pixel_size * tanx.x + (j - height / 2 + 0.5) * _camera->pixel_size * tany.x,
+            struct v3d screen_point = { pos.x + dir.x + (i - width / 2 + 0.5) * _camera->pixel_size * tanx.x + (j - height / 2 + 0.5) * _camera->pixel_size * tany.x,
                                             pos.y + dir.y + (i - width / 2 + 0.5) * _camera->pixel_size * tanx.y + (j - height / 2 + 0.5) * _camera->pixel_size * tany.y,
                                             pos.z + dir.z + (i - width / 2 + 0.5) * _camera->pixel_size * tanx.z + (j - height / 2 + 0.5) * _camera->pixel_size * tany.z
-                };
+            };
 
-                double scalar = -(_o_rect->T.x * (pos.x - _o_rect->Origin.x) + _o_rect->T.y * (pos.y - _o_rect->Origin.y) + _o_rect->T.z * (pos.z - _o_rect->Origin.z)) /
-                                 (_o_rect->T.x * (screen_point.x - pos.x) + _o_rect->T.y * (screen_point.y - pos.y) + _o_rect->T.z * (screen_point.z - pos.z));
-            
+            double scalar = -(_o_rect->T.x * (pos.x - _o_rect->Origin.x) + _o_rect->T.y * (pos.y - _o_rect->Origin.y) + _o_rect->T.z * (pos.z - _o_rect->Origin.z)) /
+                (_o_rect->T.x * (screen_point.x - pos.x) + _o_rect->T.y * (screen_point.y - pos.y) + _o_rect->T.z * (screen_point.z - pos.z));
 
+            struct v3d int3d = { pos.x + scalar * (screen_point.x - pos.x) - _o_rect->Origin.x, pos.y + scalar * (screen_point.y - pos.y) - _o_rect->Origin.y, pos.z + scalar * (screen_point.z - pos.z) - _o_rect->Origin.z };
 
-                struct v3d int3d = { pos.x + scalar * (screen_point.x - pos.x) - _o_rect->Origin.x, pos.y + scalar * (screen_point.y - pos.y) - _o_rect->Origin.y, pos.z + scalar * (screen_point.z - pos.z) - _o_rect->Origin.z };
+            struct v3d int2d = { (int3d.x * _o_rect->N.x + int3d.y * _o_rect->N.y + int3d.z * _o_rect->N.z) * 16, (int3d.x * _o_rect->B.x + int3d.y * _o_rect->B.y + int3d.z * _o_rect->B.z) * 16, 0 };
 
-                
-
-                struct v3d int2d = { (int3d.x * _o_rect->N.x + int3d.y * _o_rect->N.y + int3d.z * _o_rect->N.z) * 16, (int3d.x * _o_rect->B.x + int3d.y * _o_rect->B.y + int3d.z * _o_rect->B.z) * 16, 0 };
-
-                
-
-                if (int2d.x >= 0 && int2d.x < _o_rect->image->width && int2d.y >= 0 && int2d.y < _o_rect->image->height) { 
-                    _camera->pixels[i + j * width] = _o_rect->image->data[((int)int2d.x) + _o_rect->image->width * (_o_rect->image->height - (int)int2d.y - 1)].value; 
-                }
-                
+            if (int2d.x >= 0 && int2d.x < _o_rect->image->width && int2d.y >= 0 && int2d.y < _o_rect->image->height) {
+                _camera->pixels[i + j * width] = _o_rect->image->data[((int)int2d.x) + _o_rect->image->width * (_o_rect->image->height - (int)int2d.y - 1)].value;
             }
-
 
         }
     }
-    
-
-
-    free(frame);
-
 
     return;
 }
