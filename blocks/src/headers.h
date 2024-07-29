@@ -14,6 +14,4 @@
 
 #include "resource_loader/argb_image_loader.h"
 
-#include <windows.h>
-
 #endif // !HEADERS_H

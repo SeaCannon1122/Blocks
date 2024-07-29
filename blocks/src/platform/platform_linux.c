@@ -1,5 +1,4 @@
-#if defined(__linux__)
-
+#ifndef _WIN64
 
 #include "headers.h"
 #include <unistd.h>

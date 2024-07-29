@@ -1,0 +1,3 @@
+/home/christopher/projects/c/blocks/blocks/build/CMakeFiles/Blocks.dir
+/home/christopher/projects/c/blocks/blocks/build/CMakeFiles/edit_cache.dir
+/home/christopher/projects/c/blocks/blocks/build/CMakeFiles/rebuild_cache.dir
