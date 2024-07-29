@@ -4,14 +4,14 @@
     <ClCompile Include="src\camera.c" />
     <ClCompile Include="src\main.c" />
     <ClCompile Include="src\linear_algebra.c" />
-    <ClCompile Include="src\platform\Windows\platform_win32.c" />
+    <ClCompile Include="src\platform\platform_win32.c" />
     <ClCompile Include="src\utils.c" />
     <ClCompile Include="src\resource_loader\argb_image_loader.c" />
+    <ClCompile Include="src\platform\platform_linux.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\camera.h" />
     <ClInclude Include="src\headers.h" />
-    <ClInclude Include="src\platform\Windows\platform_win32.h" />
     <ClInclude Include="src\linear_algebra.h" />
     <ClInclude Include="src\external\stb_image.h" />
     <ClInclude Include="src\utils.h" />

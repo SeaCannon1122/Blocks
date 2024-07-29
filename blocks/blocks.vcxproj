@@ -158,9 +158,10 @@
     <ClCompile Include="src\camera.c" />
     <ClCompile Include="src\linear_algebra.c" />
     <ClCompile Include="src\main.c" />
+    <ClCompile Include="src\platform\platform_linux.c" />
     <ClCompile Include="src\resource_loader\argb_image_loader.c" />
     <ClCompile Include="src\utils.c" />
-    <ClCompile Include="src\platform\Windows\platform_win32.c" />
+    <ClCompile Include="src\platform\platform_win32.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\camera.h" />
@@ -171,7 +172,6 @@
     <ClInclude Include="src\resource_loader\argb_image_loader.h" />
     <ClInclude Include="src\types.h" />
     <ClInclude Include="src\utils.h" />
-    <ClInclude Include="src\platform\Windows\platform_win32.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="resources\alpha.png" />

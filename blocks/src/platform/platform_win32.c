@@ -1,3 +1,5 @@
+#ifdef _WIN32
+
 #include "headers.h"
 #include <windows.h>
 
@@ -174,3 +176,5 @@ int WINAPI WinMain(
 
 	return 0;
 }
+
+#endif
