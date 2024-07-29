@@ -9,28 +9,11 @@ struct camera {
     struct v3d direction_v3d;
     struct v3d xpixelpointer;
     struct v3d ypixelpointer;
-    unsigned int* pixels;
+    union pixel* pixels;
     unsigned int height;
     unsigned int width;
     double pixel_size;
     unsigned int render_distance;
-};
-
-struct triangle {
-    struct v3d p[3];
-    unsigned int color;
-};
-
-struct oriented_rect {
-    struct v3d Origin;
-    struct v3d T;
-    struct v3d N;
-    struct v3d B;
-    struct argb_image* image;
-};
-
-struct line {
-    struct v3d p[2];
 };
 
 struct camera* new_camera(struct v3d _position, unsigned int _width, unsigned int _height, double _pixel_size, unsigned int _render_distance);

@@ -8,11 +8,12 @@
 
 #include "platform/platform.h"
 #include "utils.h"
-#include "linear_algebra.h"
+#include "types.h"
 #include "camera.h"
-#include "argb_image.h"
-#include "stb_image.h"
+#include "linear_algebra.h"
 
-int Entry();
+#include "resource_loader/argb_image_loader.h"
+
+#include <windows.h>
 
 #endif // !HEADERS_H

@@ -71,20 +71,20 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)</OutDir>
-    <IntDir>$(SolutionDir)\bin\intermediates\$(Platform)\$(Configuration)</IntDir>
+    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)bin\intermediates\$(Platform)\$(Configuration\)</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)</OutDir>
-    <IntDir>$(SolutionDir)\bin\intermediates\$(Platform)\$(Configuration)</IntDir>
+    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)bin\intermediates\$(Platform)\$(Configuration\)</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)</OutDir>
-    <IntDir>$(SolutionDir)\bin\intermediates\$(Platform)\$(Configuration)</IntDir>
+    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)bin\intermediates\$(Platform)\$(Configuration\)</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)</OutDir>
-    <IntDir>$(SolutionDir)\bin\intermediates\$(Platform)\$(Configuration)</IntDir>
+    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)bin\intermediates\$(Platform)\$(Configuration\)</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -155,23 +155,30 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\argb_image.c" />
     <ClCompile Include="src\camera.c" />
-    <ClCompile Include="src\legacy.c" />
     <ClCompile Include="src\linear_algebra.c" />
     <ClCompile Include="src\main.c" />
+    <ClCompile Include="src\resource_loader\argb_image_loader.c" />
     <ClCompile Include="src\utils.c" />
     <ClCompile Include="src\platform\Windows\platform_win32.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\camera.h" />
     <ClInclude Include="src\headers.h" />
-    <ClInclude Include="src\argb_image.h" />
     <ClInclude Include="src\linear_algebra.h" />
     <ClInclude Include="src\platform\platform.h" />
-    <ClInclude Include="src\stb_image.h" />
+    <ClInclude Include="src\external\stb_image.h" />
+    <ClInclude Include="src\resource_loader\argb_image_loader.h" />
+    <ClInclude Include="src\types.h" />
     <ClInclude Include="src\utils.h" />
     <ClInclude Include="src\platform\Windows\platform_win32.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="resources\alpha.png" />
+    <Image Include="resources\alpha2.png" />
+    <Image Include="resources\diamond_ore.png" />
+    <Image Include="resources\stone.png" />
+    <Image Include="resources\white_stained_glass.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

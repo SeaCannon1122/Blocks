@@ -1,36 +1,32 @@
 #ifndef PLATFORM_WIN32_H
-#define PLATTFORM_WIN32H
+#define PLATFORM_WIN32_H
 
-#include <windows.h>
 #include "headers.h"
 
-struct RENDER_STATE {
-	unsigned int* buffer;
-	unsigned int buffer_width;
-	unsigned int buffer_height;
+struct window_state {
+	unsigned int window_width;
+	unsigned int window_height;
 };
 
 extern bool active;
-extern bool msgcheck;
-extern bool writing_to_buffer;
 
-extern struct RENDER_STATE render_state;
+extern struct window_state window_state;
 
-void sleepforms(unsigned int _time_in_milliseconds);
+void sleep_for_ms(unsigned int time_in_milliseconds);
 
-void console_top();
+void set_console_curser(int x, int y);
 
 double get_time();
 
-short keystate(int key);
+char get_key_state(int key);
 
-void drawWindow(unsigned int* buffer, int width, int height);
+void draw_to_window(unsigned int* buffer, int width, int height);
 
-void* create_thread(void* address, void* args, int* mainthreadID);
+void* create_thread(void* address, void* args);
 
 void join_thread(void* thread_handle);
 
-POINT GetMousePos();
+int Entry();
 
-#endif // !PLATTFORM_H
+#endif // !PLATFORM_H
 

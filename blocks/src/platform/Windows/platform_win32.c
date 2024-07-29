@@ -1,78 +1,80 @@
 #include "headers.h"
+#include <windows.h>
 
 bool active = true;
-bool msgcheck = false;
 
-BITMAPINFO bitmap_info;
+struct window_state window_state;
+
+BITMAPINFO bitmapInfo;
 HWND window;
 HDC hdc;
 
-struct RENDER_STATE render_state;
-
 LARGE_INTEGER frequency;
-LARGE_INTEGER start_time;
+LARGE_INTEGER startTime;
 
-void sleepforms(unsigned int _time_in_milliseconds) {
+bool keyStates[256] = { 0 };
+
+void sleep_for_ms(unsigned int _time_in_milliseconds) {
 	Sleep(_time_in_milliseconds);
-}
-
-void console_top() {
-	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-	COORD topLeft = { 0, 0 };
-	SetConsoleCursorPosition(hConsole, topLeft);
 }
 
 double get_time() {
 	LARGE_INTEGER current_time;
 	QueryPerformanceCounter(&current_time);
-	return (double)(current_time.QuadPart - start_time.QuadPart) * 1000 / (double) frequency.QuadPart;
+	return (double)(current_time.QuadPart - startTime.QuadPart) * 1000 / (double)frequency.QuadPart;
 }
 
-void drawWindow(unsigned int* buffer, int width, int height) {
-	SetDIBitsToDevice(hdc, 0, 0, width, height, 0, 0, 0, height, buffer, &bitmap_info, DIB_RGB_COLORS);
-}
-
-void* create_thread(void* address, void* args, int* mainthreadID) {
-	return CreateThread(NULL, 0, address, args, 0, mainthreadID);
+void* create_thread(void* address, void* args) {
+	return CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)address, args, 0, NULL);
 }
 
 void join_thread(void* thread_handle) {
 	WaitForSingleObject(thread_handle, INFINITE);
-
 	CloseHandle(thread_handle);
 }
 
-
-
-POINT GetMousePos() {
-	POINT ret;
-	GetCursorPos(&ret);
-	RECT rect;
-	GetClientRect(window, &rect);
-	ret.y -= rect.top - 31;
-	ret.x = ret.x - 100;
-	return ret;
+void set_console_curser(int x, int y) {
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleCursorPosition(hConsole, (COORD) { (SHORT)x, (SHORT)y });
 }
 
-short keystate(int key) {
-	return GetAsyncKeyState(key);
+void draw_to_window(unsigned int* buffer, int width, int height) {
+	SetDIBitsToDevice(hdc, 0, 0, width, height, 0, 0, 0, height, buffer, &bitmapInfo, DIB_RGB_COLORS);
 }
 
-void WinControl() {
+char get_key_state(int key) {
+
+	if (GetForegroundWindow() != window) return 0;
+
+	char keyState = 0;
+
+	SHORT currentKeyState = GetKeyState(key);
+
+	if (currentKeyState & 0x8000) keyState |= 0b0001;
+
+	if ((currentKeyState & 0x8000 ? 0x1 : 0x0) != keyStates[key]) keyState |= 0b0010;
+
+	if (currentKeyState & 0x01) keyState |= 0b0100;
+
+	keyStates[key] = (currentKeyState & 0x8000 ? 0x1 : 0x0);
+
+	return keyState;
+}
+
+void WindowControl() {
+
 	while (active) {
 		MSG message;
-		while (PeekMessage(&message, window, 0, 0, PM_REMOVE)) {
-
+		while (PeekMessageW(&message, window, 0, 0, PM_REMOVE)) {
 			TranslateMessage(&message);
-			DispatchMessage(&message);
-
+			DispatchMessageW(&message);
 		}
-		sleepforms(10);
-		
+
+		Sleep(10);	
 	}
 
 	printf("Windows: recieved stop signal\n");
-
+	return;
 }
 
 LRESULT CALLBACK WinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
@@ -84,119 +86,89 @@ LRESULT CALLBACK WinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	} break;
 
 	case WM_SIZE: {
-		msgcheck = true;
 		RECT rect;
 		GetClientRect(hwnd, &rect);
-		render_state.buffer_width = rect.right - rect.left;
-		render_state.buffer_height = rect.bottom - rect.top;
+		window_state.window_width = rect.right - rect.left;
+		window_state.window_height = rect.bottom - rect.top;
 
-		int size = render_state.buffer_width * render_state.buffer_height * sizeof(unsigned int);
-
-		if (render_state.buffer) VirtualFree(render_state.buffer, 0, MEM_RELEASE);
-		render_state.buffer = (unsigned int*) VirtualAlloc(0, size, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
-
-		bitmap_info.bmiHeader.biSize = sizeof(bitmap_info.bmiHeader);
-		bitmap_info.bmiHeader.biWidth = render_state.buffer_width;
-		bitmap_info.bmiHeader.biHeight = render_state.buffer_height;
-		bitmap_info.bmiHeader.biPlanes = 1;
-		bitmap_info.bmiHeader.biBitCount = 32;
-		bitmap_info.bmiHeader.biCompression = BI_RGB;
-		msgcheck = false;
+		bitmapInfo.bmiHeader.biSize = sizeof(bitmapInfo.bmiHeader);
+		bitmapInfo.bmiHeader.biWidth = window_state.window_width;
+		bitmapInfo.bmiHeader.biHeight = window_state.window_height;
+		bitmapInfo.bmiHeader.biPlanes = 1;
+		bitmapInfo.bmiHeader.biBitCount = 32;
+		bitmapInfo.bmiHeader.biCompression = BI_RGB;
 	} break;
 
 	default:
-		result = DefWindowProc(hwnd, uMsg, wParam, lParam);
+		result = DefWindowProcW(hwnd, uMsg, wParam, lParam);
 	}
 
 	return result;
 }
 
-int WinMain(
-	HINSTANCE hInstance,
-	HINSTANCE hPrevInstance,
-	LPSTR     lpCmdLine,
-	int       nShowCmd
+int WINAPI WinMain(
+	_In_	 HINSTANCE hInstance,
+	_In_opt_ HINSTANCE hPrevInstance,
+	_In_     LPSTR     lpCmdLine,
+	_In_     int       nShowCmd
 )
 
 {
+	(void)hInstance;
+	(void)hPrevInstance;
+	(void)lpCmdLine;
+	(void)nShowCmd;
+
+	HICON hIcon = LoadImageW( NULL, L"resources\\icon.ico", IMAGE_ICON, 0, 0, LR_LOADFROMFILE | LR_DEFAULTCOLOR );
+
 	AllocConsole();
 
 	FILE* pConsole;
 	freopen_s(&pConsole, "CONOUT$", "w", stdout);
 
-	printf("\n");
-	printf("Windows: starting\n");
-
-	QueryPerformanceFrequency(&frequency);
-	QueryPerformanceCounter(&start_time);
-
-	WNDCLASS window_class = {
+	WNDCLASS wc = {
 		CS_HREDRAW | CS_VREDRAW,
 		WinProc,
 		0,
 		0,
 		hInstance,
+		hIcon,
+		LoadCursorW(NULL, IDC_ARROW),
 		NULL,
 		NULL,
-		NULL,
-		NULL,
-		"BasicWindowClass" };
+		L"BasicWindowClass"
+	};
 
-	RegisterClass(&window_class);
+	RegisterClassW(&wc);
 
-	printf("Windows: Registered class\n");
-
-	window = CreateWindow(
-		window_class.lpszClassName,
-		L"Blocks", // Use L prefix for wide character string
+	window = CreateWindowExW(
+		0,
+		wc.lpszClassName,
+		L"Blocks",
 		WS_OVERLAPPEDWINDOW | WS_VISIBLE,
 		CW_USEDEFAULT,
 		CW_USEDEFAULT,
 		700,
 		800,
-		0,
-		0,
+		NULL,
+		NULL,
 		hInstance,
-		0
+		NULL
 	);
+
+	SendMessageW(window, WM_SETICON, ICON_BIG, (LPARAM)hIcon);
+	SendMessageW(window, WM_SETICON, ICON_SMALL, (LPARAM)hIcon);
 
 	hdc = GetDC(window);
 
-	printf("Windows: entering main method\n");
+	QueryPerformanceFrequency(&frequency);
+	QueryPerformanceCounter(&startTime);
 
-	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-	CONSOLE_SCREEN_BUFFER_INFO csbi;
-	DWORD count;
-	DWORD cellCount;
-	COORD homeCoords = { 0, 0 };
+	void* mainthread = create_thread((void*)Entry, NULL);
 
-	if (hConsole == INVALID_HANDLE_VALUE) return;
-
-	// Get the number of cells in the current buffer
-	if (!GetConsoleScreenBufferInfo(hConsole, &csbi)) return;
-	cellCount = csbi.dwSize.X * csbi.dwSize.Y;
-
-	// Fill the entire buffer with spaces
-	if (!FillConsoleOutputCharacter(hConsole, (TCHAR)' ', cellCount, homeCoords, &count)) return;
-
-	// Fill the entire buffer with the current colors and attributes
-	if (!FillConsoleOutputAttribute(hConsole, csbi.wAttributes, cellCount, homeCoords, &count)) return;
-
-	// Move the cursor to the home coordinates
-	SetConsoleCursorPosition(hConsole, homeCoords);
-
-	int mainthreadID;
-	//HANDLE mainthread = CreateThread(NULL, 0, Entry, NULL, 0, &mainthreadID);
-
-	void* mainthread = create_thread(Entry, NULL, &mainthreadID);
-
-	WinControl();
+	WindowControl();
 
 	join_thread(mainthread);
-
-	//WaitForSingleObject(mainthread, INFINITE);
-
-	//CloseHandle(mainthread);
 	
 	FreeConsole();
 
