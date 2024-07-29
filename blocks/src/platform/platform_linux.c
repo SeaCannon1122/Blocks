@@ -12,9 +12,9 @@
 #include <termios.h>
 #include <fcntl.h>
 
-bool p_active = true;
+bool active = true;
 
-struct window_state p_window_state;
+struct window_state window_state;
 
 Display* display;
 Window window;
@@ -23,22 +23,22 @@ XImage* ximage;
 int screen;
 unsigned char keyStates[256] = { 0 };
 
-void p_sleep_for_ms(unsigned int time_in_milliseconds) {
+void sleep_for_ms(unsigned int time_in_milliseconds) {
     usleep(time_in_milliseconds * 1000);
 }
 
-void p_set_console_cursor(int x, int y) {
+void set_console_cursor(int x, int y) {
     printf("\033[%d;%dH", y + 1, x + 1);
     fflush(stdout);
 }
 
-double p_get_time() {
+double get_time() {
     struct timeval current_time;
     gettimeofday(&current_time, NULL);
     return current_time.tv_sec * 1000.0 + current_time.tv_usec / 1000.0;
 }
 
-void p_draw_to_window(unsigned int* buffer, int width, int height) {
+void draw_to_window(unsigned int* buffer, int width, int height) {
     if (ximage) {
         XDestroyImage(ximage);
     }
@@ -47,17 +47,17 @@ void p_draw_to_window(unsigned int* buffer, int width, int height) {
     XFlush(display);
 }
 
-void* p_create_thread(void* (*address)(void*), void* args) {
+void* create_thread(void* (*address)(void*), void* args) {
     pthread_t thread;
     pthread_create(&thread, NULL, address, args);
     return (void*)thread;
 }
 
-void p_join_thread(void* thread_handle) {
+void join_thread(void* thread_handle) {
     pthread_join((pthread_t)thread_handle, NULL);
 }
 
-char p_get_key_state(int key) {
+char get_key_state(int key) {
     char keyState = 0;
     char keys_return[32];
     XQueryKeymap(display, keys_return);
