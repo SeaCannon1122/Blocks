@@ -159,9 +159,9 @@
     <ClCompile Include="src\linear_algebra.c" />
     <ClCompile Include="src\main.c" />
     <ClCompile Include="src\platform\platform_linux.c" />
+    <ClCompile Include="src\platform\platform_win64.c" />
     <ClCompile Include="src\resource_loader\argb_image_loader.c" />
     <ClCompile Include="src\utils.c" />
-    <ClCompile Include="src\platform\platform_win32.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\camera.h" />

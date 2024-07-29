@@ -35,8 +35,8 @@ void controlling(struct camera* _camera) {
             _camera->position.y -= 0.5 * sin(_camera->direction_sph3d.theta) * scalar;
         }
 
-        if (get_key_state(1) & 0b0001) _camera->position.z += 0.5 * scalar;
-        if (get_key_state(1) & 0b0001) _camera->position.z -= 0.5 * scalar;
+        if (get_key_state('U') & 0b0001) _camera->position.z += 0.5 * scalar;
+        if (get_key_state('D') & 0b0001) _camera->position.z -= 0.5 * scalar;
 
         if (get_key_state(1) & 0b0001) set_camera_direction_sph3d(_camera, (struct sph3d) { _camera->direction_sph3d.radius, _camera->direction_sph3d.theta, _camera->direction_sph3d.phi + 0.04});
         if (get_key_state(1) & 0b0001) set_camera_direction_sph3d(_camera, (struct sph3d) { _camera->direction_sph3d.radius, _camera->direction_sph3d.theta, _camera->direction_sph3d.phi - 0.04});

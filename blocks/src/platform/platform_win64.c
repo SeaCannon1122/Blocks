@@ -1,5 +1,12 @@
 #ifdef _WIN64
 
+#define KEY_SPACE VK_SPACE
+#define KEY_SHIFT VK_SHIFT
+#define KEY_ARROW_LEFT VK_LEFT
+#define KEY_ARROW_RIGHT VK_RIGHT
+#define KEY_ARROW_UP VK_UP
+#define KEY_ARROW_DOWN VK_DOWN
+
 #include "headers.h"
 #include <windows.h>
 
