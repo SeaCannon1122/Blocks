@@ -74,19 +74,19 @@ char get_key_state(int key) {
 
 void WindowControl() {
     XEvent event;
-    while (p_active) {
+    while (active) {
         while (XPending(display) > 0) {
             XNextEvent(display, &event);
             if (event.type == ConfigureNotify) {
                 XConfigureEvent xce = event.xconfigure;
-                p_window_state.window_width = xce.width;
-                p_window_state.window_height = xce.height;
+                window_state.window_width = xce.width;
+                window_state.window_height = xce.height;
             }
             else if (event.type == DestroyNotify || event.type == ClientMessage) {
-                p_active = false;
+                active = false;
             }
         }
-        p_sleep_for_ms(10);
+        sleep_for_ms(10);
     }
 
     printf("Linux: received stop signal\n");
@@ -119,14 +119,14 @@ int main(int argc, char** argv) {
 
     XMapWindow(display, window);
 
-    p_window_state.window_width = 700;
-    p_window_state.window_height = 800;
+    window_state.window_width = 700;
+    window_state.window_height = 800;
 
-    void* mainthread = p_create_thread((void* (*)(void*))Entry, NULL);
+    void* mainthread = create_thread((void* (*)(void*))Entry, NULL);
 
     WindowControl();
 
-    p_join_thread(mainthread);
+    join_thread(mainthread);
 
     XDestroyWindow(display, window);
     XCloseDisplay(display);
