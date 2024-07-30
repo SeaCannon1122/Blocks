@@ -35,14 +35,14 @@ void controlling(struct camera* _camera) {
             _camera->position.y -= 0.5 * sin(_camera->direction_sph3d.theta) * scalar;
         }
 
-        if (get_key_state('U') & 0b0001) _camera->position.z += 0.5 * scalar;
-        if (get_key_state('D') & 0b0001) _camera->position.z -= 0.5 * scalar;
+        if (get_key_state(KEY_SPACE) & 0b0001) _camera->position.z += 0.5 * scalar;
+        if (get_key_state(KEY_SHIFT) & 0b0001) _camera->position.z -= 0.5 * scalar;
 
-        if (get_key_state(1) & 0b0001) set_camera_direction_sph3d(_camera, (struct sph3d) { _camera->direction_sph3d.radius, _camera->direction_sph3d.theta, _camera->direction_sph3d.phi + 0.04});
-        if (get_key_state(1) & 0b0001) set_camera_direction_sph3d(_camera, (struct sph3d) { _camera->direction_sph3d.radius, _camera->direction_sph3d.theta, _camera->direction_sph3d.phi - 0.04});
+        if (get_key_state(KEY_ARROW_UP) & 0b0001) set_camera_direction_sph3d(_camera, (struct sph3d) { _camera->direction_sph3d.radius, _camera->direction_sph3d.theta, _camera->direction_sph3d.phi + 0.04});
+        if (get_key_state(KEY_ARROW_DOWN) & 0b0001) set_camera_direction_sph3d(_camera, (struct sph3d) { _camera->direction_sph3d.radius, _camera->direction_sph3d.theta, _camera->direction_sph3d.phi - 0.04});
 
-        if (get_key_state(1) & 0b0001) set_camera_direction_sph3d(_camera, (struct sph3d) { _camera->direction_sph3d.radius, _camera->direction_sph3d.theta + 0.03, _camera->direction_sph3d.phi });
-        if (get_key_state(1) & 0b0001) set_camera_direction_sph3d(_camera, (struct sph3d) { _camera->direction_sph3d.radius, _camera->direction_sph3d.theta - 0.03, _camera->direction_sph3d.phi });
+        if (get_key_state(KEY_ARROW_LEFT) & 0b0001) set_camera_direction_sph3d(_camera, (struct sph3d) { _camera->direction_sph3d.radius, _camera->direction_sph3d.theta + 0.03, _camera->direction_sph3d.phi });
+        if (get_key_state(KEY_ARROW_RIGHT) & 0b0001) set_camera_direction_sph3d(_camera, (struct sph3d) { _camera->direction_sph3d.radius, _camera->direction_sph3d.theta - 0.03, _camera->direction_sph3d.phi });
 
         //if (keystate('C')) active = false;
 
@@ -56,7 +56,9 @@ void controlling(struct camera* _camera) {
 }
 
 
-int Entry() {
+void Entry() {
+
+    
 
     double last_frame_time;
 
@@ -67,9 +69,7 @@ int Entry() {
 
     struct argb_image diamond_ore;
 
-    load_png("resources\\stone.png", &diamond_ore);
-
-    printf("%ud", diamond_ore.data[0].color.a);
+    load_png("resources/stone.png", &diamond_ore);
 
     struct oriented_rect sides[24] = {
         { (struct v3d) { 0, 0, 0 }, (struct v3d) { 0, -1, 0 }, (struct v3d) { 1, 0, 0 }, (struct v3d) { 0, 0, 1 }, &diamond_ore },
@@ -107,36 +107,40 @@ int Entry() {
 
     struct oriented_rect* floors = (struct oriented_rect*) malloc(160000 * sizeof(struct oriented_rect));
 
-    for (int i = 0; i < 160000; i++) floors[i] = (struct oriented_rect){ (struct v3d) { i % 400, (int)(i / 400), 0 }, (struct v3d) { 0, 0, 1 }, (struct v3d) { 1, 0, 0 }, (struct v3d) { 0, 1, 0 }, &diamond_ore};
+    //for (int i = 0; i < 160000; i++) floors[i] = (struct oriented_rect){ (struct v3d) { i % 400, (int)(i / 400), 0 }, (struct v3d) { 0, 0, 1 }, (struct v3d) { 1, 0, 0 }, (struct v3d) { 0, 1, 0 }, &diamond_ore};
 
     void* control_thread = create_thread((void*) controlling, _camera);
 
     last_frame_time = get_time();
 
-    while (active) {
+    int count = 0; 
 
+    while (active) {
+        count++;
         set_camera_size(_camera, window_state.window_width, window_state.window_height);
 
         flash_camera_screen(_camera);
         
         *_camera_copy = *_camera;
 
-        for (int i = 0; i < 24; i++) {
-            //if ((sides[i].Origin.x - _camera_copy->position.x) * sides[i].T.x + (sides[i].Origin.y - _camera_copy->position.y) * sides[i].T.y + (sides[i].Origin.z - _camera_copy->position.z) * sides[i].T.z < 0) camera_render_oriented_rect(_camera_copy, &sides[i]);
+        for (int i = 0; i < 6; i++) {
+            if ((sides[i].Origin.x - _camera_copy->position.x) * sides[i].T.x + (sides[i].Origin.y - _camera_copy->position.y) * sides[i].T.y + (sides[i].Origin.z - _camera_copy->position.z) * sides[i].T.z < 0) camera_render_oriented_rect(_camera_copy, &sides[i]);
         }
 
         //if ((testrect.Origin.x - _camera_copy->position.x) * testrect.T.x + (testrect.Origin.y - _camera_copy->position.y) * testrect.T.y + (testrect.Origin.z - _camera_copy->position.z) * testrect.T.z < 0) camera_render_oriented_rect(_camera_copy, &testrect);
         
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < 0; i++) {
             if ((floors[i].Origin.x - _camera_copy->position.x) * floors[i].T.x + (floors[i].Origin.y - _camera_copy->position.y) * floors[i].T.y + (floors[i].Origin.z - _camera_copy->position.z) * floors[i].T.z < 0) camera_render_oriented_rect(_camera_copy, &floors[i]);
         }
         
+        
+
         camera_render_cursor(_camera);
 
         draw_to_window((unsigned int*) _camera->pixels, _camera->width, _camera->height);
 
         if (consolemode == GAMEINFO) {
-            set_console_curser(0, 0);
+            set_console_cursor_position(0, 0);
             printf("time taken: %fms           \n", get_time() - last_frame_time);
             printf("position: %f %f %f     \n", _camera->position.x, _camera->position.y, _camera->position.z);
             printf("heading: %f %f           \n", _camera->direction_sph3d.theta, _camera->direction_sph3d.phi);
@@ -144,12 +148,10 @@ int Entry() {
         }
 
         last_frame_time = get_time();
-        
-        
     }
     
     join_thread(control_thread);
 
 
-return 0;
+return;
 }

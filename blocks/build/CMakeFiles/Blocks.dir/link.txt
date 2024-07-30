@@ -1,1 +1,0 @@
-/usr/bin/cc CMakeFiles/Blocks.dir/src/camera.c.o CMakeFiles/Blocks.dir/src/linear_algebra.c.o CMakeFiles/Blocks.dir/src/main.c.o CMakeFiles/Blocks.dir/src/utils.c.o CMakeFiles/Blocks.dir/src/resource_loader/argb_image_loader.c.o CMakeFiles/Blocks.dir/src/platform/platform_linux.c.o -o Blocks  -lX11 -lpthread -lm 

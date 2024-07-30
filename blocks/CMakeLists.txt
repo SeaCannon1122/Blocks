@@ -23,10 +23,10 @@ set(SOURCES
 # Conditionally add platform-specific files
 if(WIN64)
     message(STATUS "Configuring for Windows")
-    set(SOURCES ${SOURCES} src/platform/platform_win64.c)
+    set(SOURCES ${SOURCES} src/platform/Windows/platform_win64.c)
 elseif(UNIX)
     message(STATUS "Configuring for Unix/Linux")
-    set(SOURCES ${SOURCES} src/platform/platform_linux.c)
+    set(SOURCES ${SOURCES} src/platform/Linux/platform_linux.c)
 endif()
 
 # Add the executable

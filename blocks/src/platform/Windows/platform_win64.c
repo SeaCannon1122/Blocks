@@ -1,14 +1,7 @@
 #ifdef _WIN64
 
-#define KEY_SPACE VK_SPACE
-#define KEY_SHIFT VK_SHIFT
-#define KEY_ARROW_LEFT VK_LEFT
-#define KEY_ARROW_RIGHT VK_RIGHT
-#define KEY_ARROW_UP VK_UP
-#define KEY_ARROW_DOWN VK_DOWN
-
+#include "platform_win64.h"
 #include "headers.h"
-#include <windows.h>
 
 bool active = true;
 
@@ -42,7 +35,7 @@ void join_thread(void* thread_handle) {
 	CloseHandle(thread_handle);
 }
 
-void set_console_curser(int x, int y) {
+void set_console_cursor_position(int x, int y) {
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	SetConsoleCursorPosition(hConsole, (COORD) { (SHORT)x, (SHORT)y });
 }
@@ -153,12 +146,12 @@ int WINAPI WinMain(
 	window = CreateWindowExW(
 		0,
 		wc.lpszClassName,
-		L"Blocks",
+		L display_name,
 		WS_OVERLAPPEDWINDOW | WS_VISIBLE,
 		CW_USEDEFAULT,
 		CW_USEDEFAULT,
-		700,
-		800,
+		initial_width,
+		initial_height,
 		NULL,
 		NULL,
 		hInstance,
