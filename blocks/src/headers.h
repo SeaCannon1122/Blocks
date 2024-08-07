@@ -5,13 +5,16 @@
 #include <stdlib.h>
 #include <math.h>
 #include <stdbool.h>
+#include <time.h>
+#include <string.h>
 
-#include "platform/platform.h"
 #include "utils.h"
 #include "types.h"
 #include "camera.h"
-#include "linear_algebra.h"
+#include "render.h"
+#include "chunk.h"
+#include "world.h"
 
-#include "resource_loader/argb_image_loader.h"
-
+#include "argb_image_loader.h"
+#include "resource_manager.h"
 #endif // !HEADERS_H

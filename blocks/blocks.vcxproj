@@ -94,7 +94,7 @@
       <ConformanceMode>true</ConformanceMode>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>$(ProjectDir)src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)resources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -111,7 +111,7 @@
       <ConformanceMode>true</ConformanceMode>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>$(ProjectDir)src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)resources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -128,7 +128,7 @@
       <ConformanceMode>true</ConformanceMode>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>$(ProjectDir)src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)resources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -145,7 +145,7 @@
       <ConformanceMode>true</ConformanceMode>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>$(ProjectDir)src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)resources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -156,20 +156,25 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\camera.c" />
-    <ClCompile Include="src\linear_algebra.c" />
+    <ClCompile Include="src\chunk.c" />
+    <ClCompile Include="src\world.c" />
     <ClCompile Include="src\main.c" />
-    <ClCompile Include="src\platform\platform_linux.c" />
-    <ClCompile Include="src\platform\platform_win64.c" />
-    <ClCompile Include="src\resource_loader\argb_image_loader.c" />
+    <ClCompile Include="src\render.c" />
+    <ClCompile Include="src\argb_image_loader.c" />
+    <ClCompile Include="src\resource_manager.c" />
+    <ClCompile Include="src\resources.h" />
     <ClCompile Include="src\utils.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\camera.h" />
-    <ClInclude Include="src\headers.h" />
-    <ClInclude Include="src\linear_algebra.h" />
-    <ClInclude Include="src\platform\platform.h" />
+    <ClInclude Include="src\chunk.h" />
     <ClInclude Include="src\external\stb_image.h" />
-    <ClInclude Include="src\resource_loader\argb_image_loader.h" />
+    <ClInclude Include="src\world.h" />
+    <ClInclude Include="src\headers.h" />
+    <ClInclude Include="src\platform.h" />
+    <ClInclude Include="src\render.h" />
+    <ClInclude Include="src\argb_image_loader.h" />
+    <ClInclude Include="src\resource_manager.h" />
     <ClInclude Include="src\types.h" />
     <ClInclude Include="src\utils.h" />
   </ItemGroup>
@@ -177,8 +182,8 @@
     <Image Include="resources\alpha.png" />
     <Image Include="resources\alpha2.png" />
     <Image Include="resources\diamond_ore.png" />
+    <Image Include="resources\icon.ico" />
     <Image Include="resources\stone.png" />
-    <Image Include="resources\white_stained_glass.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

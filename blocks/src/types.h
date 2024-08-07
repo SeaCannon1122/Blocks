@@ -67,5 +67,23 @@ struct oriented_rect {
 	struct v3d N;
 	struct v3d B;
 	struct argb_image* image;
+	double distance;
 };
+
+enum direction {
+	POS_X = 0,
+	NEG_X = 1,
+	POS_Y = 2,
+	NEG_Y = 3,
+	POS_Z = 4,
+	NEG_Z = 5
+};
+
+struct block {
+	short id;
+	char facing;
+	char state;
+};
+
+
 #endif // !TYPES_H

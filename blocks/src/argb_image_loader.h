@@ -3,6 +3,6 @@
 
 #include "headers.h"
 
-void load_png(const char* file_name, struct argb_image* image);
+struct argb_image* load_png(const char* file_name);
 
 #endif // ARGB_IMAGE_LOADER

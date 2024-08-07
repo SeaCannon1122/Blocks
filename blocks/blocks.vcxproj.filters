@@ -1,30 +1,34 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="src\camera.c" />
-    <ClCompile Include="src\main.c" />
-    <ClCompile Include="src\linear_algebra.c" />
-    <ClCompile Include="src\platform\platform_win32.c" />
+    <ClCompile Include="src\argb_image_loader.c" />
     <ClCompile Include="src\utils.c" />
-    <ClCompile Include="src\resource_loader\argb_image_loader.c" />
-    <ClCompile Include="src\platform\platform_linux.c" />
-    <ClCompile Include="src\platform\platform_win64.c" />
+    <ClCompile Include="src\main.c" />
+    <ClCompile Include="src\camera.c" />
+    <ClCompile Include="src\render.c" />
+    <ClCompile Include="src\chunk.c" />
+    <ClCompile Include="src\world.c" />
+    <ClCompile Include="src\resource_manager.c" />
+    <ClCompile Include="src\resources.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\camera.h" />
-    <ClInclude Include="src\headers.h" />
-    <ClInclude Include="src\linear_algebra.h" />
     <ClInclude Include="src\external\stb_image.h" />
+    <ClInclude Include="src\argb_image_loader.h" />
     <ClInclude Include="src\utils.h" />
-    <ClInclude Include="src\platform\platform.h" />
-    <ClInclude Include="src\resource_loader\argb_image_loader.h" />
     <ClInclude Include="src\types.h" />
+    <ClInclude Include="src\headers.h" />
+    <ClInclude Include="src\camera.h" />
+    <ClInclude Include="src\render.h" />
+    <ClInclude Include="src\chunk.h" />
+    <ClInclude Include="src\world.h" />
+    <ClInclude Include="src\platform.h" />
+    <ClInclude Include="src\resource_manager.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="resources\diamond_ore.png" />
     <Image Include="resources\alpha.png" />
-    <Image Include="resources\white_stained_glass.png" />
     <Image Include="resources\alpha2.png" />
     <Image Include="resources\stone.png" />
+    <Image Include="resources\icon.ico" />
   </ItemGroup>
 </Project>
