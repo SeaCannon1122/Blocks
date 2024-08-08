@@ -157,6 +157,7 @@
   <ItemGroup>
     <ClCompile Include="src\camera.c" />
     <ClCompile Include="src\chunk.c" />
+    <ClCompile Include="src\platform.c" />
     <ClCompile Include="src\world.c" />
     <ClCompile Include="src\main.c" />
     <ClCompile Include="src\render.c" />
@@ -181,6 +182,7 @@
   <ItemGroup>
     <Image Include="resources\alpha.png" />
     <Image Include="resources\alpha2.png" />
+    <Image Include="resources\bedrock.png" />
     <Image Include="resources\diamond_ore.png" />
     <Image Include="resources\icon.ico" />
     <Image Include="resources\stone.png" />

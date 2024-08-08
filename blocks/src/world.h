@@ -8,7 +8,6 @@ struct world {
 	int seed;
 	struct chunk** chunk_pointer_table;
 	int world_chunk_radius;
-	struct resource_manager* rm;
 };
 
 struct world* new_world(char* _world_file_path, int _world_chunk_radius, int _seed);

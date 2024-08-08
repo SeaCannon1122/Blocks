@@ -6,7 +6,7 @@ struct camera* new_camera(struct v3d _position, unsigned int _width, unsigned in
     struct camera* camera_ = (struct camera*)malloc(sizeof(struct camera));
     if (camera_ == NULL) return NULL;
 
-    camera_->pixels = (union pixel*)malloc(_height * _width * sizeof(union pixel));
+    camera_->pixels = (union pixel*)calloc( _height * _width, sizeof(union pixel));
     if (camera_->pixels == NULL) {
         free(camera_);
         return NULL;

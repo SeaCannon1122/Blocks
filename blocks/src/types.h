@@ -3,6 +3,15 @@
 
 #include "headers.h"
 
+#define sized_array()
+
+//arrays
+
+struct int_array {
+	int* data;
+	int legth;
+};
+
 //2d
 
 struct v2d {
@@ -72,8 +81,8 @@ struct oriented_rect {
 
 enum direction {
 	POS_X = 0,
-	NEG_X = 1,
-	POS_Y = 2,
+	POS_Y = 1,
+	NEG_X = 2,
 	NEG_Y = 3,
 	POS_Z = 4,
 	NEG_Z = 5

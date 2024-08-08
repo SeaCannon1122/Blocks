@@ -8,6 +8,7 @@
 #include <time.h>
 #include <string.h>
 
+#include "platform.h"
 #include "utils.h"
 #include "types.h"
 #include "camera.h"

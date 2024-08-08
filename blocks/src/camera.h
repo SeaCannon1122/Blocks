@@ -23,10 +23,14 @@ void set_camera_direction_sph3d(struct camera* _camera, struct sph3d _sph3d);
 
 void set_camera_size(struct camera* _camera, unsigned int _new_width, unsigned int _new_height);
 
-void delete_camera(struct camera* _camera);
+void flash_camera_screen(struct camera* _camera);
 
 void camera_render_cursor(struct camera* _camera);
 
-void flash_camera_screen(struct camera* _camera);
+void delete_camera(struct camera* _camera);
+
+
+
+
 
 #endif // !CAMERA_H

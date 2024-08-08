@@ -10,6 +10,7 @@
     <ClCompile Include="src\world.c" />
     <ClCompile Include="src\resource_manager.c" />
     <ClCompile Include="src\resources.h" />
+    <ClCompile Include="src\platform.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\external\stb_image.h" />
@@ -30,5 +31,6 @@
     <Image Include="resources\alpha2.png" />
     <Image Include="resources\stone.png" />
     <Image Include="resources\icon.ico" />
+    <Image Include="resources\bedrock.png" />
   </ItemGroup>
 </Project>
