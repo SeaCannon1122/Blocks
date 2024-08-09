@@ -132,9 +132,9 @@ struct block_render_info block_render_infos[] = {
 	{block_grass, BLOCK_OPAQUE, grass_block_textures, 6},
 	{block_oak_log, BLOCK_OPAQUE, oak_log_block_textures, 6},
 	{block_oak_leaves, BLOCK_FULL, oak_leaves_block_textures, 6},
-	{block_oak_planks, BLOCK_FULL, oak_leaves_planks_textures, 6},
-	{block_sand, BLOCK_FULL, sand_block_textures, 6},
-	{block_diamond_ore, BLOCK_FULL, diamond_ore_block_textures, 6}
+	{block_oak_planks, BLOCK_OPAQUE, oak_leaves_planks_textures, 6},
+	{block_sand, BLOCK_OPAQUE, sand_block_textures, 6},
+	{block_diamond_ore, BLOCK_OPAQUE, diamond_ore_block_textures, 6}
 };
 
 int block_render_infos_lenght = sizeof(block_render_infos) / sizeof(struct block_render_info);

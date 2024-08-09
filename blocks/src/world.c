@@ -120,7 +120,7 @@ void world_control_function(void* args) {
 			set_cursor_rel_window(window, window->window_width / 2, window->window_height / 2);
 		}
 		//if (keystate('C')) *active = false;
-		sleep_for_ms(1);
+		sleep_for_ms(8);
 	}
 
 
