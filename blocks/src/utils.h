@@ -10,4 +10,6 @@ double clamp(double _value, double _max, double _min);
 
 int string_length(char* _str);
 
+int sign(double num);
+
 #endif // !UTILS_H

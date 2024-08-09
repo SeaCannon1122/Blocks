@@ -22,6 +22,8 @@ void sleep_for_ms(unsigned int time_in_milliseconds);
 
 void set_console_cursor_position(int x, int y);
 
+void set_cursor_rel_window(struct window_state* state, int x, int y);
+
 double get_time();
 
 char get_key_state(int key);

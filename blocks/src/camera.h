@@ -27,6 +27,8 @@ void flash_camera_screen(struct camera* _camera);
 
 void camera_render_cursor(struct camera* _camera);
 
+struct v3dabs* get_block_cords_selected(struct camera* _camera, double _reach, int* blcoks_length);
+
 void delete_camera(struct camera* _camera);
 
 

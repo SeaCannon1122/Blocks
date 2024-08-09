@@ -108,6 +108,67 @@ void camera_render_cursor(struct camera* _camera) {
 
 }
 
+struct v3dabs* get_block_cords_selected(struct camera* _camera, double _reach, int* blocks_length) {
+    int x = (int)floor(_camera->position.x);
+    int y = (int)floor(_camera->position.y);
+    int z = (int)floor(_camera->position.z);
+
+    double dx = _camera->direction_v3d.x / _camera->direction_sph3d.radius * _reach;
+    double dy = _camera->direction_v3d.y / _camera->direction_sph3d.radius * _reach;
+    double dz = _camera->direction_v3d.z / _camera->direction_sph3d.radius * _reach;
+
+    int stepX = sign(_camera->direction_v3d.x);
+    int stepY = sign(_camera->direction_v3d.y);
+    int stepZ = sign(_camera->direction_v3d.z);
+
+    double tMaxX = (stepX > 0 ? (x + 1 - _camera->position.x) : (_camera->position.x - x)) / fabs(dx);
+    double tMaxY = (stepY > 0 ? (y + 1 - _camera->position.y) : (_camera->position.y - y)) / fabs(dy);
+    double tMaxZ = (stepZ > 0 ? (z + 1 - _camera->position.z) : (_camera->position.z - z)) / fabs(dz);
+
+    double tDeltaX = 1 / fabs(dx);
+    double tDeltaY = 1 / fabs(dy);
+    double tDeltaZ = 1 / fabs(dz);
+
+    // Calculate the maximum possible t value when we reach the end of the vector
+    double length = _reach;
+    double tEnd = length / length; // This simplifies to 1.0 for normalized vector
+
+    struct v3dabs* cords = malloc(_reach * 100 * sizeof(struct v3dabs) + 1);
+    *blocks_length = 0;
+    while (tMaxX <= tEnd || tMaxY <= tEnd || tMaxZ <= tEnd) {
+        if (z >= 0 && z <= 255) {
+            cords[*blocks_length] = (struct v3dabs){ x, y, z };
+            (*blocks_length)++;
+        }
+        
+        if (tMaxX < tMaxY) {
+            if (tMaxX < tMaxZ) {
+                if (tMaxX > tEnd) break;
+                x += stepX;
+                tMaxX += tDeltaX;
+            }
+            else {
+                if (tMaxZ > tEnd) break;
+                z += stepZ;
+                tMaxZ += tDeltaZ;
+            }
+        }
+        else {
+            if (tMaxY < tMaxZ) {
+                if (tMaxY > tEnd) break;
+                y += stepY;
+                tMaxY += tDeltaY;
+            }
+            else {
+                if (tMaxZ > tEnd) break;
+                z += stepZ;
+                tMaxZ += tDeltaZ;
+            }
+        }
+    }
+    return cords;
+}
+
 void delete_camera(struct camera* _camera) {
     free(_camera->pixels);
     free(_camera);

@@ -104,6 +104,15 @@ void set_console_cursor_position(int x, int y) {
 	SetConsoleCursorPosition(hConsole, (COORD) { (SHORT)x, (SHORT)y });
 }
 
+void set_cursor_rel_window(struct window_state* state, int x, int y) {
+	POINT position;
+	GetCursorPos(&position);
+	RECT window_rect;
+	GetWindowRect(((struct window_info*)state->window_handle)->hwnd, &window_rect);
+
+	SetCursorPos(x + window_rect.left + 7, window_rect.bottom - y - 9);
+}
+
 bool is_window_active(struct window_state* state) {
 	return ((struct window_info*)state->window_handle)->active;
 }

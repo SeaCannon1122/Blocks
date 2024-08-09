@@ -13,3 +13,7 @@ int string_length(char* _str) {
     for (; _str[len] != '\0'; len++);
     return len;
 }
+
+int sign(double num) {
+    return (num > 0) - (num < 0);
+}
