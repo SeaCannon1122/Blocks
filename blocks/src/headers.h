@@ -16,6 +16,6 @@
 #include "chunk.h"
 #include "world.h"
 
-#include "argb_image_loader.h"
-#include "resource_manager.h"
+#include "resource_manager/argb_image_loader.h"
+#include "resource_manager/resource_manager.h"
 #endif // !HEADERS_H

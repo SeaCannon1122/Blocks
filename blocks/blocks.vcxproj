@@ -161,9 +161,8 @@
     <ClCompile Include="src\world.c" />
     <ClCompile Include="src\main.c" />
     <ClCompile Include="src\render.c" />
-    <ClCompile Include="src\argb_image_loader.c" />
-    <ClCompile Include="src\resource_manager.c" />
-    <ClCompile Include="src\resources.h" />
+    <ClCompile Include="src\resource_manager\argb_image_loader.c" />
+    <ClCompile Include="src\resource_manager\resource_manager.c" />
     <ClCompile Include="src\utils.c" />
   </ItemGroup>
   <ItemGroup>
@@ -174,18 +173,21 @@
     <ClInclude Include="src\headers.h" />
     <ClInclude Include="src\platform.h" />
     <ClInclude Include="src\render.h" />
-    <ClInclude Include="src\argb_image_loader.h" />
-    <ClInclude Include="src\resource_manager.h" />
+    <ClInclude Include="src\resource_manager\argb_image_loader.h" />
+    <ClInclude Include="src\resource_manager\resource_manager.h" />
     <ClInclude Include="src\types.h" />
     <ClInclude Include="src\utils.h" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="resources\alpha.png" />
-    <Image Include="resources\alpha2.png" />
     <Image Include="resources\bedrock.png" />
-    <Image Include="resources\diamond_ore.png" />
+    <Image Include="resources\dirt.png" />
     <Image Include="resources\icon.ico" />
+    <Image Include="resources\oak_leaves.png" />
+    <Image Include="resources\oak_log.png" />
+    <Image Include="resources\oak_log_top.png" />
     <Image Include="resources\stone.png" />
+    <Image Include="src\resource_manager\block_not_found.png" />
+    <Image Include="src\resource_manager\texture_not_found.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

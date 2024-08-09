@@ -1,5 +1,4 @@
 #include "headers.h"
-#include "platform.h"
 
 struct world* new_world(char* _world_file_path, int _world_chunk_radius, int _seed) {
 
@@ -31,7 +30,7 @@ void world_control_function(void* args) {
 	struct camera* _camera = ((struct control_thread_args*) args)->camera;
 	struct window_state* window = ((struct control_thread_args*)args)->window;
 
-	double scalar = 0.2;
+	double scalar = 0.3;
 
 	while (is_window_active(window)) {
 
@@ -76,7 +75,7 @@ void play_world(struct world* _world) {
 	
 	struct window_state* window = create_window(100, 100, 700, 400, "blocks");
 
-	struct camera* player_camera = new_camera( (struct v3d) {0, 0, 0}, window->window_width, window->window_height, 0.0002, 5);
+	struct camera* player_camera = new_camera( (struct v3d) {0, 0, 10}, window->window_width, window->window_height, 0.0002, 6);
 	set_camera_direction_sph3d(player_camera, (struct sph3d) {0.07, 0, 0});
 
 	struct resource_manager* master_of_the_resource = new_resource_manager();
