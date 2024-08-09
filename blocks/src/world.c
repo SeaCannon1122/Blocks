@@ -36,6 +36,8 @@ void world_control_function(void* args) {
 
 	bool input = false;
 
+	int block_to_place_id = 1;
+
 	while (is_window_active(window)) {
 
 		if (input == false) {
@@ -75,7 +77,15 @@ void world_control_function(void* args) {
 
 			set_camera_direction_sph3d(_camera, (struct sph3d) { _camera->direction_sph3d.radius, _camera->direction_sph3d.theta - 0.03 * (cursorpos.x - window->window_width / 2) / 20, _camera->direction_sph3d.phi });
 		
-
+			if (get_key_state('1') & 0b1) block_to_place_id = 1;
+			else if (get_key_state('2') & 0b1) block_to_place_id = 2;
+			else if (get_key_state('3') & 0b1) block_to_place_id = 3;
+			else if (get_key_state('4') & 0b1) block_to_place_id = 4;
+			else if (get_key_state('5') & 0b1) block_to_place_id = 5;
+			else if (get_key_state('6') & 0b1) block_to_place_id = 6;
+			else if (get_key_state('7') & 0b1) block_to_place_id = 7;
+			else if (get_key_state('8') & 0b1) block_to_place_id = 8;
+			else if (get_key_state('9') & 0b1) block_to_place_id = 9;
 
 			bool block_selected = false;
 			struct v3dabs chunk;
@@ -83,25 +93,33 @@ void world_control_function(void* args) {
 			int selected_blocks_length = 0;
 
 			struct v3dabs* selected_blocks = get_block_cords_selected(_camera, 5, &selected_blocks_length);
-
-			for (int i = 0; i < selected_blocks_length; i++) {
-				chunk = (struct v3dabs){ (int)floor((double)selected_blocks[i].x / 16), (int)floor((double)selected_blocks[i].y / 16), 0 };
-				chunk_cords = (struct v3dabs){ selected_blocks[i].x - 16 * chunk.x, selected_blocks[i].y - 16 * chunk.y, selected_blocks[i].z };
-				if (world->chunk_pointer_table[(world->world_chunk_radius + chunk.x + 2 * world->world_chunk_radius * (world->world_chunk_radius + chunk.y))]->blocks[chunk_cords.x + 16 * chunk_cords.y + 256 * chunk_cords.z].id != 0) {
-					block_selected = true;
-					break;
+			int selected_blocks_index = 0;
+			for (; selected_blocks_index < selected_blocks_length; selected_blocks_index++) {
+				chunk = (struct v3dabs){ (int)floor((double)selected_blocks[selected_blocks_index].x / 16), (int)floor((double)selected_blocks[selected_blocks_index].y / 16), 0 };
+				chunk_cords = (struct v3dabs){ (unsigned int)selected_blocks[selected_blocks_index].x % 16 , (unsigned int)selected_blocks[selected_blocks_index].y % 16, selected_blocks[selected_blocks_index].z };
+				if (world->chunk_pointer_table[(world->world_chunk_radius + chunk.x + 2 * world->world_chunk_radius * (world->world_chunk_radius + chunk.y))] != NULL) {
+					if (world->chunk_pointer_table[(world->world_chunk_radius + chunk.x + 2 * world->world_chunk_radius * (world->world_chunk_radius + chunk.y))]->blocks[chunk_cords.x + 16 * chunk_cords.y + 256 * chunk_cords.z].id != 0) {
+						block_selected = true;
+						break;
+					}
+					
 				}
 			}
 
-			free(selected_blocks);
-
 			if (block_selected == true) {
 				if ((get_key_state(KEY_MOUSE_LEFT) & 0b11) == 0b11) world->chunk_pointer_table[(world->world_chunk_radius + chunk.x + 2 * world->world_chunk_radius * (world->world_chunk_radius + chunk.y))]->blocks[chunk_cords.x + 16 * chunk_cords.y + 256 * chunk_cords.z].id = 0;
+				else if (selected_blocks_index > 0) {
+					struct v3dabs chunk_before = (struct v3dabs){ (int)floor((double)selected_blocks[selected_blocks_index-1].x / 16), (int)floor((double)selected_blocks[selected_blocks_index-1].y / 16), 0 };
+					struct v3dabs chunk_cords_before = (struct v3dabs){ (unsigned int)selected_blocks[selected_blocks_index-1].x % 16, (unsigned int)selected_blocks[selected_blocks_index-1].y % 16, selected_blocks[selected_blocks_index-1].z };
+					if ((get_key_state(KEY_MOUSE_RIGHT) & 0b11) == 0b11) {
+						if(world->chunk_pointer_table[(world->world_chunk_radius + chunk_before.x + 2 * world->world_chunk_radius * (world->world_chunk_radius + chunk_before.y))] != NULL) world->chunk_pointer_table[(world->world_chunk_radius + chunk_before.x + 2 * world->world_chunk_radius * (world->world_chunk_radius + chunk_before.y))]->blocks[chunk_cords_before.x + 16 * chunk_cords_before.y + 256 * chunk_cords_before.z].id = block_to_place_id;
+					}
+				}
 			}
+			free(selected_blocks);
 			set_cursor_rel_window(window, window->window_width / 2, window->window_height / 2);
 		}
 		//if (keystate('C')) *active = false;
-
 		sleep_for_ms(1);
 	}
 
@@ -109,7 +127,6 @@ void world_control_function(void* args) {
 }
 
 void play_world(struct world* _world) {
-	
 	struct window_state* window = create_window(100, 100, 700, 400, "blocks");
 
 	struct camera* player_camera = new_camera( (struct v3d) {9, 3, 10}, window->window_width, window->window_height, 0.0002, 4);
@@ -124,8 +141,6 @@ void play_world(struct world* _world) {
 	void* control_thread = create_thread(world_control_function, &args);
 
 	while (is_window_active(window)) {
-		set_console_cursor_position(0 , 0);
-		double start_frame_time = get_time();
 
 		set_camera_size(player_camera, window->window_width, window->window_height);
 
@@ -142,10 +157,6 @@ void play_world(struct world* _world) {
 		camera_render_cursor(&player_camera_copy);
 
 		draw_to_window(window, player_camera_copy.pixels, player_camera_copy.width, player_camera_copy.height);
-
-		printf("frame took %fms                      \n", get_time() - start_frame_time);
-		printf("pos: %f %f %f                         \n", player_camera_copy.position.x, player_camera_copy.position.y, player_camera_copy.position.z);
-
 
 	}
 

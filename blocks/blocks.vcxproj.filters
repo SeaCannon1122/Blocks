@@ -32,5 +32,10 @@
     <Image Include="resources\oak_log.png" />
     <Image Include="resources\oak_leaves.png" />
     <Image Include="resources\dirt.png" />
+    <Image Include="resources\grass_block_side.png" />
+    <Image Include="resources\grass_block_top.png" />
+    <Image Include="resources\diamond_ore.png" />
+    <Image Include="resources\sand.png" />
+    <Image Include="resources\oak_planks.png" />
   </ItemGroup>
 </Project>

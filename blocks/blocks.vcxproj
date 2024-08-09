@@ -182,11 +182,16 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="resources\bedrock.png" />
+    <Image Include="resources\diamond_ore.png" />
     <Image Include="resources\dirt.png" />
+    <Image Include="resources\grass_block_side.png" />
+    <Image Include="resources\grass_block_top.png" />
     <Image Include="resources\icon.ico" />
     <Image Include="resources\oak_leaves.png" />
     <Image Include="resources\oak_log.png" />
     <Image Include="resources\oak_log_top.png" />
+    <Image Include="resources\oak_planks.png" />
+    <Image Include="resources\sand.png" />
     <Image Include="resources\stone.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

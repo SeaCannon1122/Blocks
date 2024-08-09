@@ -5,26 +5,40 @@ enum block_ids {
 	block_stone = 1,
 	block_bedrock = 2,
 	block_dirt = 3,
-	block_oak_log = 4,
-	block_oak_leaves = 5
+	block_grass = 4,
+	block_oak_log = 5,
+	block_oak_leaves = 6,
+	block_oak_planks = 7,
+	block_sand = 8,
+	block_diamond_ore = 9
 };
 
 enum textures_ids {
 	texture_stone = 1,
 	texture_bedrock = 2,
 	texture_dirt = 3,
-	texture_oak_log = 4,
-	texture_oak_log_top = 5,
-	texture_oak_leaves = 6
+	texture_grass_block_side = 4,
+	texture_grass_block_top = 5,
+	texture_oak_log = 6,
+	texture_oak_log_top = 7,
+	texture_oak_leaves = 8,
+	texture_oak_planks = 9,
+	texture_sand = 10,
+	texture_diamond_ore = 11
 };
 
-struct argb_image_map texture_maps[100] = {
+struct argb_image_map texture_maps[] = {
 	{texture_stone, "resources/stone.png", NULL },
 	{texture_bedrock, "resources/bedrock.png", NULL },
 	{texture_dirt, "resources/dirt.png", NULL },
+	{texture_grass_block_side, "resources/grass_block_side.png", NULL },
+	{texture_grass_block_top, "resources/grass_block_top.png", NULL },
 	{texture_oak_log, "resources/oak_log.png", NULL },
 	{texture_oak_log_top, "resources/oak_log_top.png", NULL },
 	{texture_oak_leaves, "resources/oak_leaves.png", NULL },
+	{texture_oak_planks, "resources/oak_planks.png", NULL },
+	{texture_sand, "resources/sand.png", NULL },
+	{texture_diamond_ore, "resources/diamond_ore.png", NULL },
 };
 
 int texture_maps_length = sizeof(texture_maps) / sizeof(struct argb_image_map);
@@ -56,6 +70,15 @@ struct oriented_rect_info dirt_block_textures[] = {
 	{ { 0, 1, 0 }, {0, 0, -1}, {1, 0, 0}, {0, -1, 0}, NULL, texture_dirt }, // negz
 };
 
+struct oriented_rect_info grass_block_textures[] = {
+	{ { 1, 0, 0 }, {1, 0, 0}, {0, 1, 0}, {0, 0, 1}, NULL, texture_grass_block_side }, //posx
+	{ { 1, 1, 0 }, {0, 1, 0}, {-1, 0, 0}, {0, 0, 1}, NULL, texture_grass_block_side }, // posy
+	{ { 0, 1, 0 }, {-1, 0, 0}, {0, -1, 0}, {0, 0, 1}, NULL, texture_grass_block_side, }, //negx
+	{ { 0, 0, 0 }, {0, -1, 0}, {1, 0, 0}, {0, 0, 1}, NULL, texture_grass_block_side }, // negy
+	{ { 0, 0, 1 }, {0, 0, 1}, {1, 0, 0}, {0, 1, 0}, NULL, texture_grass_block_top }, //posz
+	{ { 0, 1, 0 }, {0, 0, -1}, {1, 0, 0}, {0, -1, 0}, NULL, texture_grass_block_top }, // negz
+};
+
 struct oriented_rect_info oak_log_block_textures[] = {
 	{ { 1, 0, 0 }, {1, 0, 0}, {0, 1, 0}, {0, 0, 1}, NULL, texture_oak_log }, //posx
 	{ { 1, 1, 0 }, {0, 1, 0}, {-1, 0, 0}, {0, 0, 1}, NULL, texture_oak_log }, // posy
@@ -74,13 +97,44 @@ struct oriented_rect_info oak_leaves_block_textures[] = {
 	{ { 0, 1, 0 }, {0, 0, -1}, {1, 0, 0}, {0, -1, 0}, NULL, texture_oak_leaves }, // negz
 };
 
-struct block_render_info block_render_infos[100] = {
+struct oriented_rect_info oak_leaves_planks_textures[] = {
+	{ { 1, 0, 0 }, {1, 0, 0}, {0, 1, 0}, {0, 0, 1}, NULL, texture_oak_planks }, //posx
+	{ { 1, 1, 0 }, {0, 1, 0}, {-1, 0, 0}, {0, 0, 1}, NULL, texture_oak_planks }, // posy
+	{ { 0, 1, 0 }, {-1, 0, 0}, {0, -1, 0}, {0, 0, 1}, NULL, texture_oak_planks, }, //negx
+	{ { 0, 0, 0 }, {0, -1, 0}, {1, 0, 0}, {0, 0, 1}, NULL, texture_oak_planks }, // negy
+	{ { 0, 0, 1 }, {0, 0, 1}, {1, 0, 0}, {0, 1, 0}, NULL, texture_oak_planks }, //posz
+	{ { 0, 1, 0 }, {0, 0, -1}, {1, 0, 0}, {0, -1, 0}, NULL, texture_oak_planks }, // negz
+};
+
+struct oriented_rect_info sand_block_textures[] = {
+	{ { 1, 0, 0 }, {1, 0, 0}, {0, 1, 0}, {0, 0, 1}, NULL, texture_sand }, //posx
+	{ { 1, 1, 0 }, {0, 1, 0}, {-1, 0, 0}, {0, 0, 1}, NULL, texture_sand }, // posy
+	{ { 0, 1, 0 }, {-1, 0, 0}, {0, -1, 0}, {0, 0, 1}, NULL, texture_sand, }, //negx
+	{ { 0, 0, 0 }, {0, -1, 0}, {1, 0, 0}, {0, 0, 1}, NULL, texture_sand }, // negy
+	{ { 0, 0, 1 }, {0, 0, 1}, {1, 0, 0}, {0, 1, 0}, NULL, texture_sand }, //posz
+	{ { 0, 1, 0 }, {0, 0, -1}, {1, 0, 0}, {0, -1, 0}, NULL, texture_sand }, // negz
+};
+
+struct oriented_rect_info diamond_ore_block_textures[] = {
+	{ { 1, 0, 0 }, {1, 0, 0}, {0, 1, 0}, {0, 0, 1}, NULL, texture_diamond_ore }, //posx
+	{ { 1, 1, 0 }, {0, 1, 0}, {-1, 0, 0}, {0, 0, 1}, NULL, texture_diamond_ore }, // posy
+	{ { 0, 1, 0 }, {-1, 0, 0}, {0, -1, 0}, {0, 0, 1}, NULL, texture_diamond_ore, }, //negx
+	{ { 0, 0, 0 }, {0, -1, 0}, {1, 0, 0}, {0, 0, 1}, NULL, texture_diamond_ore }, // negy
+	{ { 0, 0, 1 }, {0, 0, 1}, {1, 0, 0}, {0, 1, 0}, NULL, texture_diamond_ore }, //posz
+	{ { 0, 1, 0 }, {0, 0, -1}, {1, 0, 0}, {0, -1, 0}, NULL, texture_diamond_ore }, // negz
+};
+
+struct block_render_info block_render_infos[] = {
 	{block_air, 0, NULL, 0},
 	{block_stone, BLOCK_OPAQUE, stone_block_textures, 6},
 	{block_bedrock, BLOCK_OPAQUE, bedrock_block_textures, 6},
 	{block_dirt, BLOCK_OPAQUE, dirt_block_textures, 6},
+	{block_grass, BLOCK_OPAQUE, grass_block_textures, 6},
 	{block_oak_log, BLOCK_OPAQUE, oak_log_block_textures, 6},
-	{block_oak_leaves, BLOCK_FULL, oak_leaves_block_textures, 6}
+	{block_oak_leaves, BLOCK_FULL, oak_leaves_block_textures, 6},
+	{block_oak_planks, BLOCK_FULL, oak_leaves_planks_textures, 6},
+	{block_sand, BLOCK_FULL, sand_block_textures, 6},
+	{block_diamond_ore, BLOCK_FULL, diamond_ore_block_textures, 6}
 };
 
 int block_render_infos_lenght = sizeof(block_render_infos) / sizeof(struct block_render_info);
