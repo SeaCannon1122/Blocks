@@ -1,5 +1,5 @@
 #include "headers.h"
-#include "external/stb_image.h"
+#include "../external/stb_image.h"
 
 struct argb_image* load_png(const char* file_name) {
     int width, height, channels;

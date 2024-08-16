@@ -7,27 +7,21 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Include directories
 include_directories(src)
-include_directories(src/platform)
 include_directories(src/external)
 include_directories(src/resource_loader)
 
 # Specify source files
 set(SOURCES
-    src/camera.c
-    src/linear_algebra.c
+    src/platform.c
     src/main.c
+    src/world.c
+    src/camera.c
     src/utils.c
-    src/resource_loader/argb_image_loader.c
+    src/chunk.c
+    src/render.c
+    src/resource_manager/argb_image_loader.c
+    src/resource_manager/resource_manager.c
 )
-
-# Conditionally add platform-specific files
-if(WIN64)
-    message(STATUS "Configuring for Windows")
-    set(SOURCES ${SOURCES} src/platform/Windows/platform_win64.c)
-elseif(UNIX)
-    message(STATUS "Configuring for Unix/Linux")
-    set(SOURCES ${SOURCES} src/platform/Linux/platform_linux.c)
-endif()
 
 # Add the executable
 add_executable(Blocks ${SOURCES})

@@ -6,28 +6,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define KEY_SPACE VK_SPACE
-#define KEY_SHIFT_L VK_SHIFT
-#define KEY_SHIFT_R VK_RSHIFT
-#define KEY_CONTROL_L VK_CONTROL
-#define KEY_CONTROL_R VK_RCONTROL
-#define KEY_ALT_L VK_LMENU
-#define KEY_ALT_R VK_RMENU
-#define KEY_ESCAPE VK_ESCAPE
-#define KEY_BACKSPACE VK_BACK
-#define KEY_TAB VK_TAB
-#define KEY_ENTER VK_RETURN
-#define KEY_CAPS_LOCK VK_CAPITAL
-#define KEY_MINUS VK_OEM_MINUS
-#define KEY_PLUS VK_OEM_PLUS
-#define KEY_ARROW_LEFT VK_LEFT
-#define KEY_ARROW_RIGHT VK_RIGHT
-#define KEY_ARROW_UP VK_UP
-#define KEY_ARROW_DOWN VK_DOWN
-#define KEY_MOUSE_LEFT VK_LBUTTON
-#define KEY_MOUSE_MIDDLE VK_MBUTTON
-#define KEY_MOUSE_RIGHT VK_RBUTTON
-
 struct window_info {
 	HWND hwnd;
 	BITMAPINFO bitmapInfo;
@@ -80,6 +58,11 @@ void hide_console_window() {
 	}
 }
 
+void set_console_cursor_position(int x, int y) {
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleCursorPosition(hConsole, (COORD) { (SHORT)x, (SHORT)y });
+}
+
 void sleep_for_ms(unsigned int _time_in_milliseconds) {
 	Sleep(_time_in_milliseconds);
 }
@@ -99,40 +82,6 @@ void join_thread(void* thread_handle) {
 	CloseHandle(thread_handle);
 }
 
-void set_console_cursor_position(int x, int y) {
-	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-	SetConsoleCursorPosition(hConsole, (COORD) { (SHORT)x, (SHORT)y });
-}
-
-void set_cursor_rel_window(struct window_state* state, int x, int y) {
-	POINT position;
-	GetCursorPos(&position);
-	RECT window_rect;
-	GetWindowRect(((struct window_info*)state->window_handle)->hwnd, &window_rect);
-
-	SetCursorPos(x + window_rect.left + 7, window_rect.bottom - y - 9);
-}
-
-bool is_window_active(struct window_state* state) {
-	return ((struct window_info*)state->window_handle)->active;
-}
-
-void draw_to_window(struct window_state* state, unsigned int* buffer, int width, int height) {
-	if (is_window_active(state) == false) return;
-	SetDIBitsToDevice(((struct window_info*)state->window_handle)->hdc, 0, 0, width, height, 0, 0, 0, height, buffer, &(((struct window_info*)state->window_handle)->bitmapInfo), DIB_RGB_COLORS);
-}
-
-struct point2d_int get_mouse_cursor_position(struct window_state* state) {
-	POINT position;
-	GetCursorPos(&position);
-	RECT window_rect;
-	GetWindowRect(((struct window_info*)state->window_handle)->hwnd, &window_rect);
-
-	struct point2d_int pos = { position.x - window_rect.left - 7, window_rect.bottom - position.y - 9 };
-	return pos;
-
-}
-
 char get_key_state(int key) {
 
 	char keyState = 0;
@@ -150,6 +99,8 @@ char get_key_state(int key) {
 	return keyState;
 }
 
+//
+
 struct window_state* create_window(int posx, int posy, int width, int height, unsigned char* name) {
 
 	next_window = (struct window_to_create){
@@ -165,6 +116,10 @@ struct window_state* create_window(int posx, int posy, int width, int height, un
 	while (next_window.done_flag == false) Sleep(1);
 
 	return next_window.return_state;
+}
+
+bool is_window_active(struct window_state* state) {
+	return ((struct window_info*)state->window_handle)->active;
 }
 
 void close_window(struct window_state* state) {
@@ -189,6 +144,31 @@ void close_window(struct window_state* state) {
 
 	window_infos_reorder = false;
 
+}
+
+void draw_to_window(struct window_state* state, unsigned int* buffer, int width, int height) {
+	if (is_window_active(state) == false) return;
+	SetDIBitsToDevice(((struct window_info*)state->window_handle)->hdc, 0, 0, width, height, 0, 0, 0, height, buffer, &(((struct window_info*)state->window_handle)->bitmapInfo), DIB_RGB_COLORS);
+}
+
+struct point2d_int get_mouse_cursor_position(struct window_state* state) {
+	POINT position;
+	GetCursorPos(&position);
+	RECT window_rect;
+	GetWindowRect(((struct window_info*)state->window_handle)->hwnd, &window_rect);
+
+	struct point2d_int pos = { position.x - window_rect.left - 7, window_rect.bottom - position.y - 9 };
+	return pos;
+
+}
+
+void set_cursor_rel_window(struct window_state* state, int x, int y) {
+	POINT position;
+	GetCursorPos(&position);
+	RECT window_rect;
+	GetWindowRect(((struct window_info*)state->window_handle)->hwnd, &window_rect);
+
+	SetCursorPos(x + window_rect.left + 7, window_rect.bottom - y - 9);
 }
 
 void WindowControl() {
@@ -391,30 +371,6 @@ int WINAPI WinMain(
 #include <stdlib.h>
 #include <stdio.h>
 
-#define KEY_SPACE XK_space
-#define KEY_SHIFT_L XK_Shift_L
-#define KEY_SHIFT_R XK_Shift_R
-#define KEY_CONTROL_L XK_Control_L
-#define KEY_CONTROL_R XK_Control_R
-#define KEY_ESKAPE XK_Escape
-#define KEY_BACKSPACE XK_BackSpace
-#define KEY_ALT_L XK_Alt_L
-#define KEY_ALT_R XK_Alt_R
-#define KEY_TAB XK_Tab
-#define KEY_ENTER XK_Return
-#define KEY_CAPS_LOCK XK_Caps_Lock
-#define KEY_MINUS XK_KP_Subtract
-#define KEY_PLUS XK_KP_Add
-#define KEY_ARROW_LEFT XK_Left
-#define KEY_ARROW_RIGHT XK_Right
-#define KEY_ARROW_UP XK_Up
-#define KEY_ARROW_DOWN XK_Down
-#define KEY_MOUSE_LEFT 0x1234
-#define KEY_MOUSE_MIDDLE 0x1235
-#define KEY_MOUSE_RIGHT 0x1236
-
-//char get_key_state(int key);
-
 struct window_info {
 	Window window;
 	XImage* image;
@@ -443,12 +399,12 @@ bool keyStates[256 * 256] = { false };
 
 bool mouseButtons[3] = { false, false, false };
 
-void show_console_window() {
-	return;
-}
+void show_console_window() { return; }
 
-void hide_console_window() {
-	return;
+void hide_console_window() { return; }
+
+void set_console_cursor_position(int x, int y) {
+	// X11 does not have direct console cursor manipulation; this is a placeholder
 }
 
 void sleep_for_ms(unsigned int _time_in_milliseconds) {
@@ -470,25 +426,6 @@ void* create_thread(void* address, void* args) {
 void join_thread(void* thread_handle) {
 	pthread_join(*(pthread_t*)thread_handle, NULL);
 	free(thread_handle);
-}
-
-void set_console_cursor_position(int x, int y) {
-	// X11 does not have direct console cursor manipulation; this is a placeholder
-}
-
-void draw_to_window(struct window_state* state, unsigned int* buffer, int width, int height) {
-	if (is_window_active(state) == false) return;
-	for (int i = 0; i < width && i < display_width; i++) {
-		for (int j = 0; j < height && j < display_height; j++) {
-			((struct window_info*)state->window_handle)->pixels[i + display_width * (height - j - 1)] = buffer[i + width * j];
-		}
-	}
-
-	XPutImage(display, ((struct window_info*)state->window_handle)->window, DefaultGC(display, screen), ((struct window_info*)state->window_handle)->image, 0, 0, 0, 0, width, height);
-}
-
-bool is_window_active(struct window_state* state) {
-	return ((struct window_info*)state->window_handle)->active;
 }
 
 char get_key_state(int key) {
@@ -528,19 +465,7 @@ char get_key_state(int key) {
 	return key_state;
 }
 
-struct point2d_int get_mouse_cursor_position(struct window_state* state) {
-	if (is_window_active(state) == false) return (struct point2d_int) { -1, -1 };
-	Window root, child;
-	int root_x, root_y;
-	int win_x, win_y;
-	unsigned int mask;
-
-	XQueryPointer(display, ((struct window_info*)state->window_handle)->window, &root, &child, &root_x, &root_y, &win_x, &win_y, &mask);
-
-	struct point2d_int pos = { win_x - 2, state->window_height - win_y + 1 };
-
-	return pos;
-}
+//
 
 struct window_state* create_window(int posx, int posy, int width, int height, unsigned char* name) {
 
@@ -579,6 +504,10 @@ struct window_state* create_window(int posx, int posy, int width, int height, un
 	return &(window_infos[window_infos_length - 1]->state);
 }
 
+bool is_window_active(struct window_state* state) {
+	return ((struct window_info*)state->window_handle)->active;
+}
+
 void close_window(struct window_state* state) {
 	if (is_window_active(state)) XDestroyWindow(display, ((struct window_info*)state->window_handle)->window);
 
@@ -600,6 +529,44 @@ void close_window(struct window_state* state) {
 	}
 
 	window_infos_reorder = false;
+}
+
+void draw_to_window(struct window_state* state, unsigned int* buffer, int width, int height) {
+	if (is_window_active(state) == false) return;
+	for (int i = 0; i < width && i < display_width; i++) {
+		for (int j = 0; j < height && j < display_height; j++) {
+			((struct window_info*)state->window_handle)->pixels[i + display_width * (height - j - 1)] = buffer[i + width * j];
+		}
+	}
+
+	XPutImage(display, ((struct window_info*)state->window_handle)->window, DefaultGC(display, screen), ((struct window_info*)state->window_handle)->image, 0, 0, 0, 0, width, height);
+}
+
+struct point2d_int get_mouse_cursor_position(struct window_state* state) {
+	if (is_window_active(state) == false) return (struct point2d_int) { -1, -1 };
+	Window root, child;
+	int root_x, root_y;
+	int win_x, win_y;
+	unsigned int mask;
+
+	XQueryPointer(display, ((struct window_info*)state->window_handle)->window, &root, &child, &root_x, &root_y, &win_x, &win_y, &mask);
+
+	struct point2d_int pos = { win_x - 2, state->window_height - win_y + 1 };
+
+	return pos;
+}
+
+void set_cursor_rel_window(struct window_state* state, int x, int y) {
+	if (is_window_active(state) == false) return;
+	Window root, child;
+	int root_x, root_y;
+	int win_x, win_y;
+	unsigned int mask;
+
+	XQueryPointer(display, ((struct window_info*)state->window_handle)->window, &root, &child, &root_x, &root_y, &win_x, &win_y, &mask);
+	XWarpPointer(display, None, DefaultRootWindow(display), 0, 0, 0, 0, root_x - win_x + x + 2, root_y - win_y + state->window_height - y + 1);
+	XFlush(display); 
+	return;
 }
 
 void WindowControl() {

@@ -38,7 +38,11 @@ void world_control_function(void* args) {
 
 	int block_to_place_id = 1;
 
+	struct point2d_int cursorpos = get_mouse_cursor_position(window);
+
 	while (is_window_active(window)) {
+
+		struct point2d_int new_cursorpos = get_mouse_cursor_position(window);
 
 		if (input == false) {
 			struct point2d_int pos = get_mouse_cursor_position(window);
@@ -71,12 +75,9 @@ void world_control_function(void* args) {
 			if (get_key_state(KEY_SPACE) & 0b0001) _camera->position.z += 0.5 * scalar;
 			if (get_key_state(KEY_SHIFT_L) & 0b0001) _camera->position.z -= 0.5 * scalar;
 
-			struct point2d_int cursorpos = get_mouse_cursor_position(window);
+			set_camera_direction_sph3d(_camera, (struct sph3d) { _camera->direction_sph3d.radius, _camera->direction_sph3d.theta, _camera->direction_sph3d.phi + 0.04 * (new_cursorpos.y - cursorpos.y) / 20 });
+			set_camera_direction_sph3d(_camera, (struct sph3d) { _camera->direction_sph3d.radius, _camera->direction_sph3d.theta - 0.03 * (new_cursorpos.x - cursorpos.x) / 20, _camera->direction_sph3d.phi });
 
-			set_camera_direction_sph3d(_camera, (struct sph3d) { _camera->direction_sph3d.radius, _camera->direction_sph3d.theta, _camera->direction_sph3d.phi + 0.04 * (cursorpos.y - window->window_height / 2) / 20 });
-
-			set_camera_direction_sph3d(_camera, (struct sph3d) { _camera->direction_sph3d.radius, _camera->direction_sph3d.theta - 0.03 * (cursorpos.x - window->window_width / 2) / 20, _camera->direction_sph3d.phi });
-		
 			if (get_key_state('1') & 0b1) block_to_place_id = 1;
 			else if (get_key_state('2') & 0b1) block_to_place_id = 2;
 			else if (get_key_state('3') & 0b1) block_to_place_id = 3;
@@ -117,8 +118,8 @@ void world_control_function(void* args) {
 				}
 			}
 			free(selected_blocks);
-			set_cursor_rel_window(window, window->window_width / 2, window->window_height / 2);
 		}
+		cursorpos = new_cursorpos;
 		//if (keystate('C')) *active = false;
 		sleep_for_ms(8);
 	}

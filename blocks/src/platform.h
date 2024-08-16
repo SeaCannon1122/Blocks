@@ -14,35 +14,43 @@ struct point2d_int {
 	int y;
 };
 
+//general
+
 void show_console_window();
 
 void hide_console_window();
 
-void sleep_for_ms(unsigned int time_in_milliseconds);
-
 void set_console_cursor_position(int x, int y);
 
-void set_cursor_rel_window(struct window_state* state, int x, int y);
+void sleep_for_ms(unsigned int time_in_milliseconds);
 
 double get_time();
 
-char get_key_state(int key);
-
-bool is_window_active(struct window_state* state);
-
-void draw_to_window(struct window_state* ws, unsigned int* buffer, int width, int height);
-
 void* create_thread(void* address, void* args);
-
-void close_window(struct window_state* state);
 
 void join_thread(void* thread_handle);
 
-struct point2d_int get_mouse_cursor_position(struct window_state* state);
+char get_key_state(int key);
+
+//Window functions
 
 struct window_state* create_window(int posx, int posy, int width, int height, unsigned char* name);
 
+bool is_window_active(struct window_state* state);
+
+void close_window(struct window_state* state);
+
+void draw_to_window(struct window_state* ws, unsigned int* buffer, int width, int height);
+
+struct point2d_int get_mouse_cursor_position(struct window_state* state);
+
+void set_cursor_rel_window(struct window_state* state, int x, int y);
+
+//Entry Method
+
 void Entry();
+
+//Keysymbol Mapping
 
 #if defined(_WIN64)
 
@@ -72,6 +80,8 @@ void Entry();
 
 #elif defined(__linux__)
 
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
 #include <X11/XKBlib.h>
 
 #define KEY_SPACE XK_space
@@ -79,7 +89,7 @@ void Entry();
 #define KEY_SHIFT_R XK_Shift_R
 #define KEY_CONTROL_L XK_Control_L
 #define KEY_CONTROL_R XK_Control_R
-#define KEY_ESKAPE XK_Escape
+#define KEY_ESCAPE XK_Escape
 #define KEY_BACKSPACE XK_BackSpace
 #define KEY_ALT_L XK_Alt_L
 #define KEY_ALT_R XK_Alt_R

@@ -1,4 +1,6 @@
 #include "headers.h"
+#include "types.h"
+#include "../resource_manager/resource_manager.h"
 
 void draw_line(union pixel* _buffer, unsigned int _width, unsigned int _height, struct line2d* _line, unsigned int color) {
 
@@ -601,7 +603,7 @@ int render_world(struct world* _world, struct camera* _camera, struct resource_m
     }
     
     
-    if (rects_length > 1) qsort((void*)rects, rects_length, sizeof(void*), (_CoreCrtNonSecureSearchSortCompareFunction)compare_double_pointers);
+    if (rects_length > 1) qsort((void*)rects, rects_length, sizeof(void*), compare_double_pointers);
     
     for (int i = 0; i < rects_length; i++) {
         if ((rects[i]->Origin.x - _camera->position.x) * rects[i]->T.x + (rects[i]->Origin.y - _camera->position.y) * rects[i]->T.y + (rects[i]->Origin.z - _camera->position.z) * rects[i]->T.z < 0); camera_render_oriented_rect(_camera, rects[i]);
